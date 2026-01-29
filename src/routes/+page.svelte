@@ -65,12 +65,6 @@
         { x: 800, y: 200, w: 220, h: 20, company: 'Chulakov Studio', color: '#c084fc',
           period: 'May 2024 - Present',
           desc: 'Architecting micro-frontend security monitoring app.' },
-        { x: 1200, y: 300, w: 200, h: 20, company: 'Future Corp', color: '#f472b6',
-          period: '2025 - 2026',
-          desc: 'Innovating with AI and Web3.' },
-        { x: 1500, y: 250, w: 180, h: 20, company: 'Dream Job Inc.', color: '#fb923c',
-          period: '2026 - ∞',
-          desc: 'Building the future.' }
       ],
     particles: [],
     parallaxLayers: [],
@@ -312,13 +306,12 @@
       <h3>{currentPlatform.company}</h3>
       <p class="period">{currentPlatform.period}</p>
       <p>{currentPlatform.desc}</p>
-    {:else}
-      <div class="placeholder">
-        <h2>Welcome!</h2>
+
+    {/if}
+    <div class="placeholder">
         <p>Use the arrow keys or A/D to move and Space to jump.</p>
         <p>Jump on the platforms to learn more about my experience.</p>
-      </div>
-    {/if}
+    </div>
   </div>
 </div>
 
@@ -357,6 +350,7 @@
     color: var(--cardText);
     overflow-y: auto;
     transition: background 0.3s;
+    position: relative;
   }
 
   .description-panel h3 {
@@ -379,12 +373,22 @@
   
   .placeholder {
     text-align: center;
-    margin-top: 50%;
-    transform: translateY(-50%);
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--cardBorder);
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
 
   .placeholder h2 {
     color: var(--cardH3);
+    font-size: 1.2em;
+  }
+
+  .placeholder p {
+    font-size: 0.9em;
   }
 
   .theme-switcher {
