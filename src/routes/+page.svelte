@@ -42,8 +42,9 @@
     }
   }
 
-  function toggleTheme() {
+  function toggleTheme(event) {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    event.currentTarget.blur();
   }
 
   const game = {
