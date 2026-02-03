@@ -56,16 +56,52 @@
     platforms: [
         { x: 50, y: 400, w: 200, h: 20, company: 'Toptal', color: '#6366f1',
           period: 'Sept 2019 - Jun 2020',
-          desc: 'Built B2C e-commerce platform with secure authentication.' },
+          desc: `Cross-functional team of 5 (2 FE, 2 BE, 1 QA)
+          Developed B2C e-commerce platform development, focusing on authentication and core user-facing features.
+          Tech stack: React, Redux, Node.js, Express, PostgreSQL, MongoDB
+          Responsibilities and achievements:
+          • Designed and implemented secure authentication system featuring: JWT token-based auth, social logins, email verification, and CSRF/XSS protection.
+          • Developed product catalog with advanced filtering and a shopping cart using Redux for optimal performance.
+          • Built REST API endpoints for product operations using Node.js and Express.
+          • Actively participated in agile ceremonies: daily standups, sprint planning, and peer code reviews.`
+        },
         { x: 300, y: 350, w: 180, h: 20, company: 'Upwork', color: '#8b5cf6',
           period: 'Aug 2020 - May 2021',
-          desc: 'Developed task management platform with React, TypeScript.' },
+          desc: `Cross-functional team of 4 (FE, BE, QA, Designer)
+          Developed a feature-rich task management platform with advanced collaboration capabilities.
+          Tech stack: React, Context API, TypeScript, React Router, Draft.js, react-beautiful-dnd, Material-UI
+          Responsibilities and achievements:
+          • Built a comprehensive navigation system with React Router, including nested routing for projects and tasks.
+          • Developed an advanced search with debounced backend API integration.
+          • Implemented a Google Docs-style rich text editor using Draft.js.
+          • Created an intuitive drag-and-drop interface for task organization using react-beautiful-dnd.
+          • Architected scalable state management using Context API with TypeScript.`
+        },
         { x: 550, y: 280, w: 200, h: 20, company: 'WorkHuman', color: '#a855f7',
           period: 'May 2022 - May 2023',
-          desc: 'Led JavaScript-to-TypeScript migration.' },
+          desc: `Agile team averaging 7 members (2 FE, 2 BE, 2 QA, Designer)
+          Developed an employee rewards management platform from near-scratch.
+          Tech stack: React, TypeScript, Context API, React Router, Custom UI library
+          Responsibilities and achievements:
+          • Independently executed a complete codebase migration from JavaScript to TypeScript in one month.
+          • Developed a custom data table component with client-side multi-criteria filtering, sorting, and pagination for 1000+ records.
+          • Built a sophisticated filtering system with real-time updates using Context API.
+          • Implemented a complete reward workflow with role-based permissions and confirmation dialogs.
+          Additional experience:
+          • Worked on a legacy JSP (JavaServer Pages) project, implementing modifications and maintaining server-side rendered pages.`
+        },
         { x: 800, y: 200, w: 220, h: 20, company: 'Chulakov Studio', color: '#c084fc',
           period: 'May 2024 - Present',
-          desc: 'Architecting micro-frontend security monitoring app.' },
+          desc: `Team of 6 (2 FE, 2 BE, QA, Analyst)
+          Developing a security monitoring application for a major financial institution.
+          Tech stack: React 18, MobX, TypeScript, Highcharts, React Router, Micro-frontend architecture
+          Responsibilities and achievements:
+          • Architected and developed a micro-frontend module using React, MobX, and TypeScript for real-time data flows.
+          • Built a comprehensive analytics dashboard suite using Highcharts, creating multiple custom visualization types (line, bar, pie, heatmaps).
+          • Engineered highly customized, interactive chart components with drill-down capabilities and cross-chart data synchronization.
+          • Optimized rendering performance for high-volume data visualization, handling thousands of data points efficiently.
+          • Systematically debugged and resolved critical issues across the application, including race conditions, UI logic errors, and memory leaks.`
+        },
       ],
     particles: [],
     parallaxLayers: [],
@@ -73,6 +109,54 @@
     levelEnd: 2000,
     gravity: 0.5, jumpForce: -12, moveSpeed: 5, keys: {}
   };
+
+  function parseDescription(desc) {
+    if (!desc) return null;
+
+    const lines = desc.split('\n').map(line => line.trim()).filter(line => line);
+    const result = {
+      intro: [],
+      techStack: '',
+      achievements: [],
+      additional: []
+    };
+
+    let currentSection = 'intro';
+
+    for (const line of lines) {
+      const lowerLine = line.toLowerCase();
+
+      if (lowerLine.startsWith('tech stack:')) {
+        result.techStack = line.substring('Tech stack:'.length).trim();
+        currentSection = 'achievements';
+      } else if (lowerLine.startsWith('responsibilities and achievements:')) {
+        currentSection = 'achievements';
+      } else if (lowerLine.startsWith('additional experience:')) {
+        currentSection = 'additional';
+      } else if (line.startsWith('•')) {
+        const item = line.substring(1).trim();
+        if (currentSection === 'additional') {
+          result.additional.push(item);
+        } else {
+          result.achievements.push(item);
+        }
+      } else {
+        if (currentSection === 'intro') {
+          result.intro.push(line);
+        } else {
+          const list = currentSection === 'achievements' ? result.achievements : result.additional;
+          if (list.length > 0) {
+            list[list.length - 1] += ' ' + line;
+          } else {
+            result.intro.push(line);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  $: formattedDesc = parseDescription(currentPlatform?.desc);
 
   function handleKeyDown(e) {
     game.keys[e.key] = true;
@@ -189,114 +273,51 @@
       });
       ctx.globalAlpha = 1;
       
-      // Octopus Character
       const p = game.player;
       ctx.save();
       ctx.translate(p.x, p.y);
       
-      const px = 4; // pixel size
+      const px = 4;
       const time = Date.now() * 0.003;
       
-      // Red pants (TWO SEPARATE LEGS with bigger gap)
       ctx.fillStyle = '#dc2626';
-      // Left pant leg (wider gap in middle)
       ctx.fillRect(6, 32, 11, p.h - 36);
-      // Right pant leg
       ctx.fillRect(23, 32, 11, p.h - 36);
       
-      // Pants details (belt/waistband - full width)
       ctx.fillStyle = '#991b1b';
       ctx.fillRect(6, 32, 28, 3);
       
-      // Gap between legs is just empty (transparent/white background shows through)
-      // No need to draw anything - the space between x:17-23 is just empty
-      
-      // Animated floating tentacles around body (larger and more visible)
       ctx.strokeStyle = T.player2 || '#06b6d4';
       ctx.lineWidth = 4;
       ctx.lineCap = 'round';
       
-      // Top left tentacle (long)
-      ctx.beginPath();
-      ctx.moveTo(8, 10);
-      const float1 = Math.sin(time + 0) * 8;
-      ctx.quadraticCurveTo(-4, 4 + float1, -10, -2);
-      ctx.stroke();
-      
-      // Top right tentacle (long)
-      ctx.beginPath();
-      ctx.moveTo(32, 10);
-      const float2 = Math.sin(time + 1.5) * 8;
-      ctx.quadraticCurveTo(44, 4 + float2, 50, -2);
-      ctx.stroke();
-      
-      // Middle left tentacle
-      ctx.beginPath();
-      ctx.moveTo(6, 18);
-      const float3 = Math.sin(time + 3) * 6;
-      ctx.quadraticCurveTo(-6, 16 + float3, -12, 10);
-      ctx.stroke();
-      
-      // Middle right tentacle
-      ctx.beginPath();
-      ctx.moveTo(34, 18);
-      const float4 = Math.sin(time + 4.5) * 6;
-      ctx.quadraticCurveTo(46, 16 + float4, 52, 10);
-      ctx.stroke();
-      
-      // Bottom left tentacle
-      ctx.beginPath();
-      ctx.moveTo(10, 26);
-      const float5 = Math.sin(time + 2) * 5;
-      ctx.quadraticCurveTo(0, 26 + float5, -6, 20);
-      ctx.stroke();
-      
-      // Bottom right tentacle
-      ctx.beginPath();
-      ctx.moveTo(30, 26);
-      const float6 = Math.sin(time + 3.5) * 5;
-      ctx.quadraticCurveTo(40, 26 + float6, 46, 20);
-      ctx.stroke();
-      
-      // Suction cups on tentacles (larger)
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      const cups = [
-        {x: -6, y: 2 + float1},
-        {x: 46, y: 2 + float2},
-        {x: -8, y: 14 + float3},
-        {x: 48, y: 14 + float4},
-        {x: -2, y: 22 + float5},
-        {x: 42, y: 22 + float6},
+      const tentacles = [
+        { x1: 8, y1: 10, x2: -4, y2: 4, x3: -10, y3: -2, offset: 0, factor: 8 },
+        { x1: 32, y1: 10, x2: 44, y2: 4, x3: 50, y3: -2, offset: 1.5, factor: 8 },
+        { x1: 6, y1: 18, x2: -6, y2: 16, x3: -12, y3: 10, offset: 3, factor: 6 },
+        { x1: 34, y1: 18, x2: 46, y2: 16, x3: 52, y3: 10, offset: 4.5, factor: 6 },
+        { x1: 10, y1: 26, x2: 0, y2: 26, x3: -6, y3: 20, offset: 2, factor: 5 },
+        { x1: 30, y1: 26, x2: 40, y2: 26, x3: 46, y3: 20, offset: 3.5, factor: 5 }
       ];
-      cups.forEach(cup => {
+
+      tentacles.forEach(t => {
         ctx.beginPath();
-        ctx.arc(cup.x, cup.y, 2.5, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(t.x1, t.y1);
+        const float = Math.sin(time + t.offset) * t.factor;
+        ctx.quadraticCurveTo(t.x2, t.y2 + float, t.x3, t.y3);
+        ctx.stroke();
       });
       
-      // Octopus body (10x8 pixels)
       const octopus = [
-        '..888888..',
-        '.88888888.',
-        '8888888888',
-        '8822..2288',
-        '8822..2288',
-        '8888888888',
-        '.88888888.',
-        '..888888..',
+        '..888888..', '.88888888.', '8888888888', '8822..2288', '8822..2288',
+        '8888888888', '.88888888.', '..888888..'
       ];
       
-      // Draw body
       for(let row = 0; row < octopus.length; row++) {
         for(let col = 0; col < octopus[row].length; col++) {
           const pixel = octopus[row][col];
-          
           if(pixel === '8') {
-            if(row < 3) {
-              ctx.fillStyle = T.player1 || '#22d3ee';
-            } else {
-              ctx.fillStyle = T.player2 || '#06b6d4';
-            }
+            ctx.fillStyle = row < 3 ? (T.player1 || '#22d3ee') : (T.player2 || '#06b6d4');
             ctx.fillRect(col * px, row * px, px, px);
           } else if(pixel === '2') {
             ctx.fillStyle = T.playerEyes || '#000';
@@ -305,22 +326,17 @@
         }
       }
       
-      // Eye shine
       ctx.fillStyle = '#fff';
       ctx.fillRect(3 * px, 3 * px, px, px);
       ctx.fillRect(7 * px, 3 * px, px, px);
       
-      // Cheek blush
       ctx.fillStyle = 'rgba(251, 113, 133, 0.5)';
       ctx.fillRect(1 * px, 5 * px, px * 2, px);
       ctx.fillRect(7 * px, 5 * px, px * 2, px);
       
-      // Static ground legs (RIGHT AT THE BOTTOM - using p.h)
       ctx.fillStyle = T.player2 || '#06b6d4';
-      // Left leg
       ctx.fillRect(10, p.h - 8, 6, 4);
       ctx.fillRect(8, p.h - 4, 8, 4);
-      // Right leg
       ctx.fillRect(24, p.h - 8, 6, 4);
       ctx.fillRect(24, p.h - 4, 8, 4);
       
@@ -392,16 +408,42 @@
     </button>
   </div>
   <div class="description-panel" bind:this={descriptionPanel}>
-    {#if currentPlatform}
+    {#if currentPlatform && formattedDesc}
       <h3>{currentPlatform.company}</h3>
       <p class="period">{currentPlatform.period}</p>
-      <p>{currentPlatform.desc}</p>
 
+      {#each formattedDesc.intro as paragraph}
+        <p>{paragraph}</p>
+      {/each}
+
+      {#if formattedDesc.techStack}
+        <h4 class="section-title">Tech Stack</h4>
+        <p class="tech-stack">{formattedDesc.techStack}</p>
+      {/if}
+
+      {#if formattedDesc.achievements.length > 0}
+        <h4 class="section-title">Responsibilities and Achievements</h4>
+        <ul class="achievements-list">
+          {#each formattedDesc.achievements as item}
+            <li>{item}</li>
+          {/each}
+        </ul>
+      {/if}
+
+      {#if formattedDesc.additional.length > 0}
+        <h4 class="section-title">Additional Experience</h4>
+        <ul class="achievements-list">
+          {#each formattedDesc.additional as item}
+            <li>{item}</li>
+          {/each}
+        </ul>
+      {/if}
+    {:else}
+      <div class="placeholder">
+          <p>Use the arrow keys or A/D to move and Space to jump.</p>
+          <p>Jump on the platforms to learn more about my experience.</p>
+      </div>
     {/if}
-    <div class="placeholder">
-        <p>Use the arrow keys or A/D to move and Space to jump.</p>
-        <p>Jump on the platforms to learn more about my experience.</p>
-    </div>
   </div>
 </div>
 
@@ -458,27 +500,21 @@
   .description-panel p {
     font-size: 16px;
     line-height: 1.6;
-    margin: 0;
+    margin: 1em 0;
   }
   
   .placeholder {
     text-align: center;
     position: absolute;
-    bottom: 40px;
-    left: 0;
-    right: 0;
-    border-top: 1px solid var(--cardBorder);
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
-  .placeholder h2 {
-    color: var(--cardH3);
-    font-size: 1.2em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
   }
 
   .placeholder p {
     font-size: 0.9em;
+    color: var(--cardPeriod);
   }
 
   .theme-switcher {
@@ -500,5 +536,31 @@
     justify-content: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     backdrop-filter: blur(10px);
+  }
+
+  .section-title {
+    color: var(--cardH3);
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--cardBorder);
+    padding-bottom: 5px;
+  }
+
+  .tech-stack {
+    font-size: 14px !important;
+    color: var(--cardPeriod) !important;
+    line-height: 1.5;
+  }
+
+  .achievements-list {
+    padding-left: 20px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .achievements-list li {
+    margin-bottom: 10px;
+    line-height: 1.5;
   }
 </style>
