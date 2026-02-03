@@ -158,85 +158,174 @@
   }
 
   function draw(ctx) {
-    const T = themes[currentTheme];
-    ctx.fillStyle = T.bg;
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.save();
-    ctx.translate(-game.camera.x, -game.camera.y);
-
-    game.parallaxLayers.forEach(layer => {
-      ctx.fillStyle = layer.color;
-      const parallaxX = -game.camera.x * layer.speed;
-      layer.items.forEach(item => {
-        ctx.fillRect(item.x + parallaxX, item.y, item.w, item.h);
+      const T = themes[currentTheme];
+      ctx.fillStyle = T.bg;
+      ctx.fillRect(0, 0, width, height);
+      ctx.save();
+      ctx.translate(-game.camera.x, -game.camera.y);
+      game.parallaxLayers.forEach(layer => {
+        ctx.fillStyle = layer.color;
+        const parallaxX = -game.camera.x * layer.speed;
+        layer.items.forEach(item => {
+          ctx.fillRect(item.x + parallaxX, item.y, item.w, item.h);
+        });
       });
-    });
-
-    game.platforms.forEach(platform => {
-      ctx.fillStyle = T.platformShadow;
-      ctx.fillRect(platform.x + 4, platform.y + 4, platform.w, platform.h);
-      ctx.fillStyle = platform.color;
-      ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
-      ctx.fillStyle = T.platformTop;
-      ctx.fillRect(platform.x, platform.y, platform.w, 3);
-      ctx.fillStyle = T.text;
-      ctx.font = 'bold 14px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(platform.company, platform.x + platform.w / 2, platform.y - 10);
-    });
-
-    game.particles.forEach(pt => {
-      ctx.fillStyle = pt.color;
-      ctx.globalAlpha = pt.life;
-      ctx.fillRect(pt.x - 3, pt.y - 3, 6, 6);
-    });
-    ctx.globalAlpha = 1;
-
-    const p = game.player;
-    ctx.save();
-    ctx.translate(p.x + p.w / 2, p.y + p.h);
-
-    // Shadow
-    ctx.fillStyle = T.platformShadow;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, p.w / 2 * 1.2, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.scale(1 / p.squash, p.squash);
-
-    // Spring
-    const springHeight = 20;
-    ctx.strokeStyle = T.spring;
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    let coils = 5;
-    let coilHeight = springHeight / coils;
-    for(let i = 0; i < coils + 1; i++) {
-        let y = -i * coilHeight;
-        let x = Math.sin(i * 1.5 + Date.now() * 0.02) * 10;
-        if(i === 0 || i === coils) x = 0;
-        ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Body
-    const bodyHeight = p.h - springHeight;
-    ctx.translate(0, -springHeight);
-    
-    const gradient = ctx.createLinearGradient(-p.w / 2, -bodyHeight, p.w / 2, 0);
-    gradient.addColorStop(0, T.player1);
-    gradient.addColorStop(1, T.player2);
-    ctx.fillStyle = gradient;
-    ctx.fillRect(-p.w / 2, -bodyHeight, p.w, bodyHeight);
-
-    // Eyes
-    ctx.fillStyle = T.playerEyes;
-    ctx.fillRect(-p.w / 4 - 5, -bodyHeight + 12, 6, 6);
-    ctx.fillRect(p.w / 4 - 1, -bodyHeight + 12, 6, 6);
-    ctx.restore();
-
-    ctx.restore();
+      game.platforms.forEach(platform => {
+        ctx.fillStyle = T.platformShadow;
+        ctx.fillRect(platform.x + 4, platform.y + 4, platform.w, platform.h);
+        ctx.fillStyle = platform.color;
+        ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
+        ctx.fillStyle = T.platformTop;
+        ctx.fillRect(platform.x, platform.y, platform.w, 3);
+        ctx.fillStyle = T.text;
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(platform.company, platform.x + platform.w / 2, platform.y + platform.h + 15);
+      });
+      game.particles.forEach(pt => {
+        ctx.fillStyle = pt.color;
+        ctx.globalAlpha = pt.life;
+        ctx.fillRect(pt.x - 3, pt.y - 3, 6, 6);
+      });
+      ctx.globalAlpha = 1;
+      
+      // Octopus Character
+      const p = game.player;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      
+      const px = 4; // pixel size
+      const time = Date.now() * 0.003;
+      
+      // Red pants (TWO SEPARATE LEGS with bigger gap)
+      ctx.fillStyle = '#dc2626';
+      // Left pant leg (wider gap in middle)
+      ctx.fillRect(6, 32, 11, p.h - 36);
+      // Right pant leg
+      ctx.fillRect(23, 32, 11, p.h - 36);
+      
+      // Pants details (belt/waistband - full width)
+      ctx.fillStyle = '#991b1b';
+      ctx.fillRect(6, 32, 28, 3);
+      
+      // Gap between legs is just empty (transparent/white background shows through)
+      // No need to draw anything - the space between x:17-23 is just empty
+      
+      // Animated floating tentacles around body (larger and more visible)
+      ctx.strokeStyle = T.player2 || '#06b6d4';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      
+      // Top left tentacle (long)
+      ctx.beginPath();
+      ctx.moveTo(8, 10);
+      const float1 = Math.sin(time + 0) * 8;
+      ctx.quadraticCurveTo(-4, 4 + float1, -10, -2);
+      ctx.stroke();
+      
+      // Top right tentacle (long)
+      ctx.beginPath();
+      ctx.moveTo(32, 10);
+      const float2 = Math.sin(time + 1.5) * 8;
+      ctx.quadraticCurveTo(44, 4 + float2, 50, -2);
+      ctx.stroke();
+      
+      // Middle left tentacle
+      ctx.beginPath();
+      ctx.moveTo(6, 18);
+      const float3 = Math.sin(time + 3) * 6;
+      ctx.quadraticCurveTo(-6, 16 + float3, -12, 10);
+      ctx.stroke();
+      
+      // Middle right tentacle
+      ctx.beginPath();
+      ctx.moveTo(34, 18);
+      const float4 = Math.sin(time + 4.5) * 6;
+      ctx.quadraticCurveTo(46, 16 + float4, 52, 10);
+      ctx.stroke();
+      
+      // Bottom left tentacle
+      ctx.beginPath();
+      ctx.moveTo(10, 26);
+      const float5 = Math.sin(time + 2) * 5;
+      ctx.quadraticCurveTo(0, 26 + float5, -6, 20);
+      ctx.stroke();
+      
+      // Bottom right tentacle
+      ctx.beginPath();
+      ctx.moveTo(30, 26);
+      const float6 = Math.sin(time + 3.5) * 5;
+      ctx.quadraticCurveTo(40, 26 + float6, 46, 20);
+      ctx.stroke();
+      
+      // Suction cups on tentacles (larger)
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      const cups = [
+        {x: -6, y: 2 + float1},
+        {x: 46, y: 2 + float2},
+        {x: -8, y: 14 + float3},
+        {x: 48, y: 14 + float4},
+        {x: -2, y: 22 + float5},
+        {x: 42, y: 22 + float6},
+      ];
+      cups.forEach(cup => {
+        ctx.beginPath();
+        ctx.arc(cup.x, cup.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      // Octopus body (10x8 pixels)
+      const octopus = [
+        '..888888..',
+        '.88888888.',
+        '8888888888',
+        '8822..2288',
+        '8822..2288',
+        '8888888888',
+        '.88888888.',
+        '..888888..',
+      ];
+      
+      // Draw body
+      for(let row = 0; row < octopus.length; row++) {
+        for(let col = 0; col < octopus[row].length; col++) {
+          const pixel = octopus[row][col];
+          
+          if(pixel === '8') {
+            if(row < 3) {
+              ctx.fillStyle = T.player1 || '#22d3ee';
+            } else {
+              ctx.fillStyle = T.player2 || '#06b6d4';
+            }
+            ctx.fillRect(col * px, row * px, px, px);
+          } else if(pixel === '2') {
+            ctx.fillStyle = T.playerEyes || '#000';
+            ctx.fillRect(col * px, row * px, px, px);
+          }
+        }
+      }
+      
+      // Eye shine
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(3 * px, 3 * px, px, px);
+      ctx.fillRect(7 * px, 3 * px, px, px);
+      
+      // Cheek blush
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.5)';
+      ctx.fillRect(1 * px, 5 * px, px * 2, px);
+      ctx.fillRect(7 * px, 5 * px, px * 2, px);
+      
+      // Static ground legs (RIGHT AT THE BOTTOM - using p.h)
+      ctx.fillStyle = T.player2 || '#06b6d4';
+      // Left leg
+      ctx.fillRect(10, p.h - 8, 6, 4);
+      ctx.fillRect(8, p.h - 4, 8, 4);
+      // Right leg
+      ctx.fillRect(24, p.h - 8, 6, 4);
+      ctx.fillRect(24, p.h - 4, 8, 4);
+      
+      ctx.restore();
+      ctx.restore();
   }
 
   onMount(() => {
