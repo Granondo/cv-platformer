@@ -1,5 +1,11 @@
 <script>
   import { onMount } from 'svelte';
+  import { _, locale, isLoading } from 'svelte-i18n';
+  import en from '$lib/i18n/locales/en.json';
+  import ru from '$lib/i18n/locales/ru.json';
+  import ja from '$lib/i18n/locales/ja.json';
+
+  const translations = { en, ru, ja };
 
   let canvas;
   let descriptionPanel;
@@ -7,6 +13,12 @@
   let width, height;
 
   let currentTheme = 'light';
+  const languageOptions = [
+    { value: 'en', label: 'English' },
+    { value: 'ru', label: 'Русский' },
+    { value: 'ja', label: '日本語' }
+  ];
+
   const themes = {
     light: {
       bg: '#f0f9ff',
@@ -47,6 +59,10 @@
     event.currentTarget.blur();
   }
 
+  function handleLanguageChange(event) {
+    locale.set(event.target.value);
+  }
+
   const game = {
     player: {
       x: 70, y: 390, w: 40, h: 60,
@@ -55,54 +71,10 @@
     },
     platforms: [
         { x: 0, y: 450, w: 180, h: 20, color: '#3b82f6' },
-        { x: 250, y: 400, w: 200, h: 20, company: 'Toptal', color: '#6366f1',
-          period: 'Sept 2019 - Jun 2020',
-          desc: `Cross-functional team of 5 (2 FE, 2 BE, 1 QA)
-          Developed B2C e-commerce platform development, focusing on authentication and core user-facing features.
-          Tech stack: React, Redux, Node.js, Express, PostgreSQL, MongoDB
-          Responsibilities and achievements:
-          • Designed and implemented secure authentication system featuring: JWT token-based auth, social logins, email verification, and CSRF/XSS protection.
-          • Developed product catalog with advanced filtering and a shopping cart using Redux for optimal performance.
-          • Built REST API endpoints for product operations using Node.js and Express.
-          • Actively participated in agile ceremonies: daily standups, sprint planning, and peer code reviews.`
-        },
-        { x: 500, y: 350, w: 180, h: 20, company: 'Upwork', color: '#8b5cf6',
-          period: 'Aug 2020 - May 2021',
-          desc: `Cross-functional team of 4 (FE, BE, QA, Designer)
-          Developed a feature-rich task management platform with advanced collaboration capabilities.
-          Tech stack: React, Context API, TypeScript, React Router, Draft.js, react-beautiful-dnd, Material-UI
-          Responsibilities and achievements:
-          • Built a comprehensive navigation system with React Router, including nested routing for projects and tasks.
-          • Developed an advanced search with debounced backend API integration.
-          • Implemented a Google Docs-style rich text editor using Draft.js.
-          • Created an intuitive drag-and-drop interface for task organization using react-beautiful-dnd.
-          • Architected scalable state management using Context API with TypeScript.`
-        },
-        { x: 750, y: 280, w: 200, h: 20, company: 'WorkHuman', color: '#a855f7',
-          period: 'May 2022 - May 2023',
-          desc: `Agile team averaging 7 members (2 FE, 2 BE, 2 QA, Designer)
-          Developed an employee rewards management platform from near-scratch.
-          Tech stack: React, TypeScript, Context API, React Router, Custom UI library
-          Responsibilities and achievements:
-          • Independently executed a complete codebase migration from JavaScript to TypeScript in one month.
-          • Developed a custom data table component with client-side multi-criteria filtering, sorting, and pagination for 1000+ records.
-          • Built a sophisticated filtering system with real-time updates using Context API.
-          • Implemented a complete reward workflow with role-based permissions and confirmation dialogs.
-          Additional experience:
-          • Worked on a legacy JSP (JavaServer Pages) project, implementing modifications and maintaining server-side rendered pages.`
-        },
-        { x: 1000, y: 200, w: 220, h: 20, company: 'Chulakov Studio', color: '#c084fc',
-          period: 'May 2024 - Present',
-          desc: `Team of 6 (2 FE, 2 BE, QA, Analyst)
-          Developing a security monitoring application for a major financial institution.
-          Tech stack: React 18, MobX, TypeScript, Highcharts, React Router, Micro-frontend architecture
-          Responsibilities and achievements:
-          • Architected and developed a micro-frontend module using React, MobX, and TypeScript for real-time data flows.
-          • Built a comprehensive analytics dashboard suite using Highcharts, creating multiple custom visualization types (line, bar, pie, heatmaps).
-          • Engineered highly customized, interactive chart components with drill-down capabilities and cross-chart data synchronization.
-          • Optimized rendering performance for high-volume data visualization, handling thousands of data points efficiently.
-          • Systematically debugged and resolved critical issues across the application, including race conditions, UI logic errors, and memory leaks.`
-        },
+        { x: 250, y: 400, w: 200, h: 20, key: 'toptal', color: '#6366f1' },
+        { x: 500, y: 350, w: 180, h: 20, key: 'upwork', color: '#8b5cf6' },
+        { x: 750, y: 280, w: 200, h: 20, key: 'workhuman', color: '#a855f7' },
+        { x: 1000, y: 200, w: 220, h: 20, key: 'chulakov', color: '#c084fc' },
       ],
     particles: [],
     parallaxLayers: [],
@@ -111,53 +83,25 @@
     gravity: 0.5, jumpForce: -12, moveSpeed: 5, keys: {}
   };
 
-  function parseDescription(desc) {
-    if (!desc) return null;
+  function getPlatformData(platform, currentLocale) {
+    if (!platform?.key || !currentLocale) return null;
 
-    const lines = desc.split('\n').map(line => line.trim()).filter(line => line);
-    const result = {
-      intro: [],
-      techStack: '',
-      achievements: [],
-      additional: []
+    const lang = translations[currentLocale] || translations.en;
+    const platformInfo = lang.platforms[platform.key];
+
+    if (!platformInfo) return null;
+
+    return {
+      company: platformInfo.company,
+      period: platformInfo.period,
+      intro: platformInfo.intro.split('\n').filter(line => line.trim()),
+      techStack: platformInfo.techStack,
+      achievements: platformInfo.achievements || [],
+      additional: platformInfo.additional || []
     };
-
-    let currentSection = 'intro';
-
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
-
-      if (lowerLine.startsWith('tech stack:')) {
-        result.techStack = line.substring('Tech stack:'.length).trim();
-        currentSection = 'achievements';
-      } else if (lowerLine.startsWith('responsibilities and achievements:')) {
-        currentSection = 'achievements';
-      } else if (lowerLine.startsWith('additional experience:')) {
-        currentSection = 'additional';
-      } else if (line.startsWith('•')) {
-        const item = line.substring(1).trim();
-        if (currentSection === 'additional') {
-          result.additional.push(item);
-        } else {
-          result.achievements.push(item);
-        }
-      } else {
-        if (currentSection === 'intro') {
-          result.intro.push(line);
-        } else {
-          const list = currentSection === 'achievements' ? result.achievements : result.additional;
-          if (list.length > 0) {
-            list[list.length - 1] += ' ' + line;
-          } else {
-            result.intro.push(line);
-          }
-        }
-      }
-    }
-    return result;
   }
 
-  $: formattedDesc = parseDescription(currentPlatform?.desc);
+  $: platformData = getPlatformData(currentPlatform, $locale);
 
   function handleKeyDown(e) {
     game.keys[e.key] = true;
@@ -217,7 +161,7 @@
         landed = true;
 
         if (p.onPlatform !== platform) {
-          if (platform.company) {
+          if (platform.key) {
             displayPlatformInfo(platform);
           }
           p.onPlatform = platform;
@@ -264,11 +208,15 @@
         ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
         ctx.fillStyle = T.platformTop;
         ctx.fillRect(platform.x, platform.y, platform.w, 3);
-        if (platform.company) {
-          ctx.fillStyle = T.text;
-          ctx.font = 'bold 14px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(platform.company, platform.x + platform.w / 2, platform.y + platform.h + 15);
+        if (platform.key) {
+          const lang = translations[$locale] || translations.en;
+          const company = lang.platforms[platform.key]?.company;
+          if (company) {
+            ctx.fillStyle = T.text;
+            ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(company, platform.x + platform.w / 2, platform.y + platform.h + 15);
+          }
         }
       });
       game.particles.forEach(pt => {
@@ -349,9 +297,12 @@
       ctx.restore();
   }
 
-  onMount(() => {
+  let gameInitialized = false;
+
+  $: if (!$isLoading && canvas && descriptionPanel && !gameInitialized) {
+    gameInitialized = true;
     const ctx = canvas.getContext('2d');
-    
+
     function createParallax() {
       game.parallaxLayers = [];
       const layerCount = 3;
@@ -385,66 +336,66 @@
       draw(ctx);
       requestAnimationFrame(gameLoop);
     }
-    
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('resize', resize);
-    
+
     resize();
     gameLoop();
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('resize', resize);
-    };
-  });
+  }
 </script>
 
 <svelte:head>
   <title>Vladimir Rybas - Interactive Resume</title>
 </svelte:head>
 
+{#if !$isLoading}
 <div class="container" style="--bg:{themes[currentTheme].bg}; --panelBg:{themes[currentTheme].panelBg}; --cardBorder:{themes[currentTheme].cardBorder}; --cardText:{themes[currentTheme].cardText}; --cardPeriod:{themes[currentTheme].cardPeriod}; --cardH3:{themes[currentTheme].cardH3};">
   <div class="game-wrapper">
     <canvas bind:this={canvas}></canvas>
+    <select class="language-selector" value={$locale} on:change={handleLanguageChange}>
+      {#each languageOptions as option}
+        <option value={option.value}>{option.label}</option>
+      {/each}
+    </select>
     <button class="theme-switcher" on:click={toggleTheme}>
       {currentTheme === 'light' ? '🌙' : '☀️'}
     </button>
   </div>
   <div class="description-panel" bind:this={descriptionPanel}>
     <div class="instructions">
-      <p>Use the arrow keys or A/D to move and Space to jump.</p>
-      <p>Jump on the platforms to learn more about my experience.</p>
+      <p>{$_('instructions.controls')}</p>
+      <p>{$_('instructions.goal')}</p>
     </div>
 
-    {#if currentPlatform && formattedDesc}
+    {#if currentPlatform && platformData}
       <div class="content">
-        <h3>{currentPlatform.company}</h3>
-        <p class="period">{currentPlatform.period}</p>
+        <h3>{platformData.company}</h3>
+        <p class="period">{platformData.period}</p>
 
-        {#each formattedDesc.intro as paragraph}
+        {#each platformData.intro as paragraph}
           <p>{paragraph}</p>
         {/each}
 
-        {#if formattedDesc.techStack}
-          <h4 class="section-title">Tech Stack</h4>
-          <p class="tech-stack">{formattedDesc.techStack}</p>
+        {#if platformData.techStack}
+          <h4 class="section-title">{$_('sections.techStack')}</h4>
+          <p class="tech-stack">{platformData.techStack}</p>
         {/if}
 
-        {#if formattedDesc.achievements.length > 0}
-          <h4 class="section-title">Responsibilities and Achievements</h4>
+        {#if platformData.achievements.length > 0}
+          <h4 class="section-title">{$_('sections.responsibilities')}</h4>
           <ul class="achievements-list">
-            {#each formattedDesc.achievements as item}
+            {#each platformData.achievements as item}
               <li>{item}</li>
             {/each}
           </ul>
         {/if}
 
-        {#if formattedDesc.additional.length > 0}
-          <h4 class="section-title">Additional Experience</h4>
+        {#if platformData.additional.length > 0}
+          <h4 class="section-title">{$_('sections.additional')}</h4>
           <ul class="achievements-list">
-            {#each formattedDesc.additional as item}
+            {#each platformData.additional as item}
               <li>{item}</li>
             {/each}
           </ul>
@@ -453,13 +404,14 @@
     {/if}
   </div>
 </div>
+{/if}
 
 <style>
   :global(body) {
     margin: 0;
     background: var(--bg);
     overflow: hidden;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   }
 
   .container {
@@ -539,6 +491,35 @@
     justify-content: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     backdrop-filter: blur(10px);
+  }
+
+  .language-selector {
+    position: absolute;
+    top: 20px;
+    right: 80px;
+    z-index: 100;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: var(--cardText);
+    padding: 10px 15px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    height: 50px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    outline: none;
+  }
+
+  .language-selector:hover {
+    background: rgba(255,255,255,0.3);
+  }
+
+  .language-selector option {
+    background: var(--panelBg);
+    color: var(--cardText);
+    padding: 10px;
   }
 
   .section-title {

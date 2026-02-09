@@ -1,0 +1,66 @@
+{
+  "instructions": {
+    "controls": "Use the arrow keys or A/D to move and Space to jump.",
+    "goal": "Jump on the platforms to learn more about my experience."
+  },
+  "sections": {
+    "techStack": "Tech Stack",
+    "responsibilities": "Responsibilities and Achievements",
+    "additional": "Additional Experience"
+  },
+  "platforms": {
+    "toptal": {
+      "company": "Toptal",
+      "period": "Sept 2019 - Jun 2020",
+      "intro": "Cross-functional team of 5 (2 FE, 2 BE, 1 QA)\nDeveloped B2C e-commerce platform development, focusing on authentication and core user-facing features.",
+      "techStack": "React, Redux, Node.js, Express, PostgreSQL, MongoDB",
+      "achievements": [
+        "Designed and implemented secure authentication system featuring: JWT token-based auth, social logins, email verification, and CSRF/XSS protection.",
+        "Developed product catalog with advanced filtering and a shopping cart using Redux for optimal performance.",
+        "Built REST API endpoints for product operations using Node.js and Express.",
+        "Actively participated in agile ceremonies: daily standups, sprint planning, and peer code reviews."
+      ]
+    },
+    "upwork": {
+      "company": "Upwork",
+      "period": "Aug 2020 - May 2021",
+      "intro": "Cross-functional team of 4 (FE, BE, QA, Designer)\nDeveloped a feature-rich task management platform with advanced collaboration capabilities.",
+      "techStack": "React, Context API, TypeScript, React Router, Draft.js, react-beautiful-dnd, Material-UI",
+      "achievements": [
+        "Built a comprehensive navigation system with React Router, including nested routing for projects and tasks.",
+        "Developed an advanced search with debounced backend API integration.",
+        "Implemented a Google Docs-style rich text editor using Draft.js.",
+        "Created an intuitive drag-and-drop interface for task organization using react-beautiful-dnd.",
+        "Architected scalable state management using Context API with TypeScript."
+      ]
+    },
+    "workhuman": {
+      "company": "WorkHuman",
+      "period": "May 2022 - May 2023",
+      "intro": "Agile team averaging 7 members (2 FE, 2 BE, 2 QA, Designer)\nDeveloped an employee rewards management platform from near-scratch.",
+      "techStack": "React, TypeScript, Context API, React Router, Custom UI library",
+      "achievements": [
+        "Independently executed a complete codebase migration from JavaScript to TypeScript in one month.",
+        "Developed a custom data table component with client-side multi-criteria filtering, sorting, and pagination for 1000+ records.",
+        "Built a sophisticated filtering system with real-time updates using Context API.",
+        "Implemented a complete reward workflow with role-based permissions and confirmation dialogs."
+      ],
+      "additional": [
+        "Worked on a legacy JSP (JavaServer Pages) project, implementing modifications and maintaining server-side rendered pages."
+      ]
+    },
+    "chulakov": {
+      "company": "Chulakov Studio",
+      "period": "May 2024 - Present",
+      "intro": "Team of 6 (2 FE, 2 BE, QA, Analyst)\nDeveloping a security monitoring application for a major financial institution.",
+      "techStack": "React 18, MobX, TypeScript, Highcharts, React Router, Micro-frontend architecture",
+      "achievements": [
+        "Architected and developed a micro-frontend module using React, MobX, and TypeScript for real-time data flows.",
+        "Built a comprehensive analytics dashboard suite using Highcharts, creating multiple custom visualization types (line, bar, pie, heatmaps).",
+        "Engineered highly customized, interactive chart components with drill-down capabilities and cross-chart data synchronization.",
+        "Optimized rendering performance for high-volume data visualization, handling thousands of data points efficiently.",
+        "Systematically debugged and resolved critical issues across the application, including race conditions, UI logic errors, and memory leaks."
+      ]
+    }
+  }
+}
