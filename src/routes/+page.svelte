@@ -49,12 +49,13 @@
 
   const game = {
     player: {
-      x: 100, y: 300, w: 40, h: 60,
+      x: 70, y: 390, w: 40, h: 60,
       vx: 0, vy: 0, jumping: false,
       squash: 1, onPlatform: null
     },
     platforms: [
-        { x: 50, y: 400, w: 200, h: 20, company: 'Toptal', color: '#6366f1',
+        { x: 0, y: 450, w: 180, h: 20, color: '#3b82f6' },
+        { x: 250, y: 400, w: 200, h: 20, company: 'Toptal', color: '#6366f1',
           period: 'Sept 2019 - Jun 2020',
           desc: `Cross-functional team of 5 (2 FE, 2 BE, 1 QA)
           Developed B2C e-commerce platform development, focusing on authentication and core user-facing features.
@@ -65,7 +66,7 @@
           • Built REST API endpoints for product operations using Node.js and Express.
           • Actively participated in agile ceremonies: daily standups, sprint planning, and peer code reviews.`
         },
-        { x: 300, y: 350, w: 180, h: 20, company: 'Upwork', color: '#8b5cf6',
+        { x: 500, y: 350, w: 180, h: 20, company: 'Upwork', color: '#8b5cf6',
           period: 'Aug 2020 - May 2021',
           desc: `Cross-functional team of 4 (FE, BE, QA, Designer)
           Developed a feature-rich task management platform with advanced collaboration capabilities.
@@ -77,7 +78,7 @@
           • Created an intuitive drag-and-drop interface for task organization using react-beautiful-dnd.
           • Architected scalable state management using Context API with TypeScript.`
         },
-        { x: 550, y: 280, w: 200, h: 20, company: 'WorkHuman', color: '#a855f7',
+        { x: 750, y: 280, w: 200, h: 20, company: 'WorkHuman', color: '#a855f7',
           period: 'May 2022 - May 2023',
           desc: `Agile team averaging 7 members (2 FE, 2 BE, 2 QA, Designer)
           Developed an employee rewards management platform from near-scratch.
@@ -90,7 +91,7 @@
           Additional experience:
           • Worked on a legacy JSP (JavaServer Pages) project, implementing modifications and maintaining server-side rendered pages.`
         },
-        { x: 800, y: 200, w: 220, h: 20, company: 'Chulakov Studio', color: '#c084fc',
+        { x: 1000, y: 200, w: 220, h: 20, company: 'Chulakov Studio', color: '#c084fc',
           period: 'May 2024 - Present',
           desc: `Team of 6 (2 FE, 2 BE, QA, Analyst)
           Developing a security monitoring application for a major financial institution.
@@ -216,7 +217,9 @@
         landed = true;
 
         if (p.onPlatform !== platform) {
-          displayPlatformInfo(platform);
+          if (platform.company) {
+            displayPlatformInfo(platform);
+          }
           p.onPlatform = platform;
         }
       }
@@ -238,7 +241,7 @@
        p.x = game.levelEnd;
        p.vx = 0;
     }
-    if (p.y > height) { p.y = 300; p.x = 100; p.vy = 0; game.camera.x = 0; hidePlatformInfo(); }
+    if (p.y > height) { p.y = 390; p.x = 70; p.vy = 0; game.camera.x = 0; hidePlatformInfo(); }
   }
 
   function draw(ctx) {
@@ -261,10 +264,12 @@
         ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
         ctx.fillStyle = T.platformTop;
         ctx.fillRect(platform.x, platform.y, platform.w, 3);
-        ctx.fillStyle = T.text;
-        ctx.font = 'bold 14px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(platform.company, platform.x + platform.w / 2, platform.y + platform.h + 15);
+        if (platform.company) {
+          ctx.fillStyle = T.text;
+          ctx.font = 'bold 14px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(platform.company, platform.x + platform.w / 2, platform.y + platform.h + 15);
+        }
       });
       game.particles.forEach(pt => {
         ctx.fillStyle = pt.color;
