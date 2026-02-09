@@ -228,71 +228,129 @@
       
       const p = game.player;
       ctx.save();
-      ctx.translate(p.x, p.y);
-      
-      const px = 4;
-      const time = Date.now() * 0.003;
-      
-      ctx.fillStyle = '#dc2626';
-      ctx.fillRect(6, 32, 11, p.h - 36);
-      ctx.fillRect(23, 32, 11, p.h - 36);
-      
-      ctx.fillStyle = '#991b1b';
-      ctx.fillRect(6, 32, 28, 3);
-      
-      ctx.strokeStyle = T.player2 || '#06b6d4';
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      
-      const tentacles = [
-        { x1: 8, y1: 10, x2: -4, y2: 4, x3: -10, y3: -2, offset: 0, factor: 8 },
-        { x1: 32, y1: 10, x2: 44, y2: 4, x3: 50, y3: -2, offset: 1.5, factor: 8 },
-        { x1: 6, y1: 18, x2: -6, y2: 16, x3: -12, y3: 10, offset: 3, factor: 6 },
-        { x1: 34, y1: 18, x2: 46, y2: 16, x3: 52, y3: 10, offset: 4.5, factor: 6 },
-        { x1: 10, y1: 26, x2: 0, y2: 26, x3: -6, y3: 20, offset: 2, factor: 5 },
-        { x1: 30, y1: 26, x2: 40, y2: 26, x3: 46, y3: 20, offset: 3.5, factor: 5 }
-      ];
+      ctx.translate(p.x + p.w / 2, p.y + p.h);
 
-      tentacles.forEach(t => {
-        ctx.beginPath();
-        ctx.moveTo(t.x1, t.y1);
-        const float = Math.sin(time + t.offset) * t.factor;
-        ctx.quadraticCurveTo(t.x2, t.y2 + float, t.x3, t.y3);
-        ctx.stroke();
-      });
-      
-      const octopus = [
-        '..888888..', '.88888888.', '8888888888', '8822..2288', '8822..2288',
-        '8888888888', '.88888888.', '..888888..'
-      ];
-      
-      for(let row = 0; row < octopus.length; row++) {
-        for(let col = 0; col < octopus[row].length; col++) {
-          const pixel = octopus[row][col];
-          if(pixel === '8') {
-            ctx.fillStyle = row < 3 ? (T.player1 || '#22d3ee') : (T.player2 || '#06b6d4');
-            ctx.fillRect(col * px, row * px, px, px);
-          } else if(pixel === '2') {
-            ctx.fillStyle = T.playerEyes || '#000';
-            ctx.fillRect(col * px, row * px, px, px);
-          }
-        }
-      }
-      
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(3 * px, 3 * px, px, px);
-      ctx.fillRect(7 * px, 3 * px, px, px);
-      
-      ctx.fillStyle = 'rgba(251, 113, 133, 0.5)';
-      ctx.fillRect(1 * px, 5 * px, px * 2, px);
-      ctx.fillRect(7 * px, 5 * px, px * 2, px);
-      
+      const time = Date.now() * 0.003;
+      const bounce = Math.sin(time * 3) * 2;
+
+      // Apply squash and stretch
+      const scaleX = 1 / p.squash;
+      const scaleY = p.squash;
+      ctx.scale(scaleX, scaleY);
+
+      // Wing flap animation (only when jumping)
+      const wingFlap = p.jumping ? Math.sin(time * 15) * 0.4 : -0.3;
+
+      // Left wing (behind)
+      ctx.save();
+      ctx.translate(-12, -35);
+      ctx.rotate(-0.5 + wingFlap);
       ctx.fillStyle = T.player2 || '#06b6d4';
-      ctx.fillRect(10, p.h - 8, 6, 4);
-      ctx.fillRect(8, p.h - 4, 8, 4);
-      ctx.fillRect(24, p.h - 8, 6, 4);
-      ctx.fillRect(24, p.h - 4, 8, 4);
-      
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 8, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Wing highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(-2, -6, 3, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Right wing (behind)
+      ctx.save();
+      ctx.translate(12, -35);
+      ctx.rotate(0.5 - wingFlap);
+      ctx.fillStyle = T.player2 || '#06b6d4';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 8, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Wing highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(2, -6, 3, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Legs (move while walking)
+      const legMove = Math.sin(time * 6) * 3;
+      ctx.strokeStyle = T.player2 || '#06b6d4';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+
+      // Left leg
+      ctx.beginPath();
+      ctx.moveTo(-8, -8);
+      ctx.lineTo(-12 + legMove, 0);
+      ctx.stroke();
+
+      // Right leg
+      ctx.beginPath();
+      ctx.moveTo(8, -8);
+      ctx.lineTo(12 - legMove, 0);
+      ctx.stroke();
+
+      // Main body - smooth blob shape
+      ctx.fillStyle = T.player1 || '#22d3ee';
+      ctx.beginPath();
+      ctx.ellipse(0, -30, 20, 25, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Body shine/highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.beginPath();
+      ctx.ellipse(-6, -38, 8, 10, -0.3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      const eyeOffset = Math.sin(time * 2) * 1;
+
+      // Left eye white
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-8, -32 + bounce, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Right eye white
+      ctx.beginPath();
+      ctx.arc(8, -32 + bounce, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Left pupil
+      ctx.fillStyle = T.playerEyes || '#1e293b';
+      ctx.beginPath();
+      ctx.arc(-8 + eyeOffset, -32 + bounce, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Right pupil
+      ctx.beginPath();
+      ctx.arc(8 + eyeOffset, -32 + bounce, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eye highlights
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-9 + eyeOffset, -33 + bounce, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(7 + eyeOffset, -33 + bounce, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Smile
+      ctx.strokeStyle = T.playerEyes || '#1e293b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, -26, 8, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+
+      // Blush
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(-14, -26, 4, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(14, -26, 4, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.restore();
       ctx.restore();
   }
