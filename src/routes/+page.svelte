@@ -408,40 +408,42 @@
     </button>
   </div>
   <div class="description-panel" bind:this={descriptionPanel}>
+    <div class="instructions">
+      <p>Use the arrow keys or A/D to move and Space to jump.</p>
+      <p>Jump on the platforms to learn more about my experience.</p>
+    </div>
+
     {#if currentPlatform && formattedDesc}
-      <h3>{currentPlatform.company}</h3>
-      <p class="period">{currentPlatform.period}</p>
+      <div class="content">
+        <h3>{currentPlatform.company}</h3>
+        <p class="period">{currentPlatform.period}</p>
 
-      {#each formattedDesc.intro as paragraph}
-        <p>{paragraph}</p>
-      {/each}
+        {#each formattedDesc.intro as paragraph}
+          <p>{paragraph}</p>
+        {/each}
 
-      {#if formattedDesc.techStack}
-        <h4 class="section-title">Tech Stack</h4>
-        <p class="tech-stack">{formattedDesc.techStack}</p>
-      {/if}
+        {#if formattedDesc.techStack}
+          <h4 class="section-title">Tech Stack</h4>
+          <p class="tech-stack">{formattedDesc.techStack}</p>
+        {/if}
 
-      {#if formattedDesc.achievements.length > 0}
-        <h4 class="section-title">Responsibilities and Achievements</h4>
-        <ul class="achievements-list">
-          {#each formattedDesc.achievements as item}
-            <li>{item}</li>
-          {/each}
-        </ul>
-      {/if}
+        {#if formattedDesc.achievements.length > 0}
+          <h4 class="section-title">Responsibilities and Achievements</h4>
+          <ul class="achievements-list">
+            {#each formattedDesc.achievements as item}
+              <li>{item}</li>
+            {/each}
+          </ul>
+        {/if}
 
-      {#if formattedDesc.additional.length > 0}
-        <h4 class="section-title">Additional Experience</h4>
-        <ul class="achievements-list">
-          {#each formattedDesc.additional as item}
-            <li>{item}</li>
-          {/each}
-        </ul>
-      {/if}
-    {:else}
-      <div class="placeholder">
-          <p>Use the arrow keys or A/D to move and Space to jump.</p>
-          <p>Jump on the platforms to learn more about my experience.</p>
+        {#if formattedDesc.additional.length > 0}
+          <h4 class="section-title">Additional Experience</h4>
+          <ul class="achievements-list">
+            {#each formattedDesc.additional as item}
+              <li>{item}</li>
+            {/each}
+          </ul>
+        {/if}
       </div>
     {/if}
   </div>
@@ -476,13 +478,23 @@
   .description-panel {
     width: 30%;
     max-width: 400px;
-    padding: 40px;
     background: var(--panelBg);
     border-left: 1px solid var(--cardBorder);
     color: var(--cardText);
     overflow-y: auto;
     transition: background 0.3s;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .instructions {
+    padding: 10px 40px;
+    border-bottom: 1px solid var(--cardBorder);
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .content {
+    padding: 40px;
   }
 
   .description-panel h3 {
@@ -498,25 +510,11 @@
   }
 
   .description-panel p {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.6;
     margin: 1em 0;
   }
   
-  .placeholder {
-    text-align: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-  }
-
-  .placeholder p {
-    font-size: 0.9em;
-    color: var(--cardPeriod);
-  }
-
   .theme-switcher {
     position: absolute;
     top: 20px;
