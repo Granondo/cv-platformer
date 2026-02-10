@@ -231,125 +231,182 @@
       ctx.translate(p.x + p.w / 2, p.y + p.h);
 
       const time = Date.now() * 0.003;
-      const bounce = Math.sin(time * 3) * 2;
+      const legMove = p.vx !== 0 ? Math.sin(time * 10) * 5 : 0;
 
-      // Apply squash and stretch
-      const scaleX = 1 / p.squash;
-      const scaleY = p.squash;
-      ctx.scale(scaleX, scaleY);
+      // Giraffe colors
+      const bodyColor = '#F5A623';
+      const spotColor = '#8B4513';
+      const neckColor = '#F0A030';
+      const darkColor = '#5C3010';
 
-      // Wing flap animation (only when jumping)
-      const wingFlap = p.jumping ? Math.sin(time * 15) * 0.4 : -0.3;
-
-      // Left wing (behind)
-      ctx.save();
-      ctx.translate(-12, -35);
-      ctx.rotate(-0.5 + wingFlap);
-      ctx.fillStyle = T.player2 || '#06b6d4';
+      // ── BACK LEGS ──────────────────────────────────────────────
+      ctx.fillStyle = bodyColor;
+      // Back left
       ctx.beginPath();
-      ctx.ellipse(0, 0, 8, 18, 0, 0, Math.PI * 2);
+      ctx.roundRect(-14, -18, 6, 20, 3);
       ctx.fill();
-      // Wing highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      // Back right
       ctx.beginPath();
-      ctx.ellipse(-2, -6, 3, 8, 0, 0, Math.PI * 2);
+      ctx.roundRect(8, -18, 6, 20, 3);
+      ctx.fill();
+
+      // ── BODY ──────────────────────────────────────────────────
+      ctx.fillStyle = bodyColor;
+      ctx.beginPath();
+      ctx.ellipse(0, -28, 17, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Body spots
+      ctx.fillStyle = spotColor;
+      ctx.beginPath(); ctx.ellipse(-9, -26, 4, 5, 0.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(7, -30, 3, 4, -0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(2, -22, 3, 3, 0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(-3, -34, 3, 3, -0.1, 0, Math.PI * 2); ctx.fill();
+
+      // ── NECK ──────────────────────────────────────────────────
+      ctx.fillStyle = neckColor;
+      ctx.beginPath();
+      ctx.moveTo(-7, -40);
+      ctx.lineTo(7, -40);
+      ctx.lineTo(5, -66);
+      ctx.lineTo(-5, -66);
+      ctx.closePath();
+      ctx.fill();
+
+      // Neck spots
+      ctx.fillStyle = spotColor;
+      ctx.beginPath(); ctx.ellipse(-3, -50, 3, 4, 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(4, -58, 2, 3, -0.2, 0, Math.PI * 2); ctx.fill();
+
+      // ── SCARF ──────────────────────────────────────────────────
+      const scarfColors = ['#e63946', '#f4a261', '#e9c46a', '#2a9d8f'];
+      const flow = -p.vx * 5;
+      const wave = Math.sin(time * 8) * (Math.abs(p.vx) > 0.5 ? 4 : 1.5);
+      const scarfY = -54;
+      const scarfStripes = 4;
+
+      for (let i = 0; i < scarfStripes; i++) {
+        const offset = i * 3 - 4;
+        const cp1x = flow * 0.3;
+        const cp1y = scarfY + offset + wave;
+        const cp2x = flow * 0.7;
+        const cp2y = scarfY + offset + 8 - wave;
+        const endX = flow;
+        const endY = scarfY + offset + 5;
+
+        ctx.beginPath();
+        ctx.moveTo(-3, scarfY + offset);
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
+        ctx.strokeStyle = scarfColors[i];
+        ctx.lineWidth = 3.5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+
+      // Scarf knot on the neck
+      ctx.fillStyle = '#e63946';
+      ctx.beginPath();
+      ctx.ellipse(0, scarfY + 4, 6, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#c1121f';
+      ctx.beginPath();
+      ctx.ellipse(0, scarfY + 4, 3, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ── FRONT LEGS (animated) ──────────────────────────────────
+      ctx.fillStyle = bodyColor;
+      // Front left
+      ctx.save();
+      ctx.translate(-9, -22);
+      ctx.rotate(legMove * 0.04);
+      ctx.beginPath();
+      ctx.roundRect(-3, 0, 6, 22, 3);
+      ctx.fill();
+      ctx.fillStyle = darkColor;
+      ctx.beginPath();
+      ctx.roundRect(-3, 18, 7, 5, 2);
       ctx.fill();
       ctx.restore();
 
-      // Right wing (behind)
+      // Front right
       ctx.save();
-      ctx.translate(12, -35);
-      ctx.rotate(0.5 - wingFlap);
-      ctx.fillStyle = T.player2 || '#06b6d4';
+      ctx.translate(9, -22);
+      ctx.rotate(-legMove * 0.04);
+      ctx.fillStyle = bodyColor;
       ctx.beginPath();
-      ctx.ellipse(0, 0, 8, 18, 0, 0, Math.PI * 2);
+      ctx.roundRect(-3, 0, 6, 22, 3);
       ctx.fill();
-      // Wing highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.fillStyle = darkColor;
       ctx.beginPath();
-      ctx.ellipse(2, -6, 3, 8, 0, 0, Math.PI * 2);
+      ctx.roundRect(-3, 18, 7, 5, 2);
       ctx.fill();
       ctx.restore();
 
-      // Legs (move while walking)
-      const legMove = Math.sin(time * 6) * 3;
-      ctx.strokeStyle = T.player2 || '#06b6d4';
-      ctx.lineWidth = 6;
-      ctx.lineCap = 'round';
+      // Back hooves
+      ctx.fillStyle = darkColor;
+      ctx.beginPath(); ctx.roundRect(-14, -1, 7, 5, 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(8, -1, 7, 5, 2); ctx.fill();
 
-      // Left leg
+      // ── HEAD ──────────────────────────────────────────────────
+      ctx.fillStyle = bodyColor;
       ctx.beginPath();
-      ctx.moveTo(-8, -8);
-      ctx.lineTo(-12 + legMove, 0);
-      ctx.stroke();
-
-      // Right leg
-      ctx.beginPath();
-      ctx.moveTo(8, -8);
-      ctx.lineTo(12 - legMove, 0);
-      ctx.stroke();
-
-      // Main body - smooth blob shape
-      ctx.fillStyle = T.player1 || '#22d3ee';
-      ctx.beginPath();
-      ctx.ellipse(0, -30, 20, 25, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -73, 10, 9, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Body shine/highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      // Snout
+      ctx.fillStyle = '#F8C07A';
       ctx.beginPath();
-      ctx.ellipse(-6, -38, 8, 10, -0.3, 0, 0, Math.PI * 2);
+      ctx.ellipse(5, -70, 6, 5, 0.3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Eyes
-      const eyeOffset = Math.sin(time * 2) * 1;
+      // Nostrils
+      ctx.fillStyle = darkColor;
+      ctx.beginPath(); ctx.ellipse(4, -69, 1.2, 0.8, 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(7, -68, 1.2, 0.8, 0.3, 0, Math.PI * 2); ctx.fill();
 
-      // Left eye white
+      // Ossicones (horns)
+      ctx.fillStyle = spotColor;
+      ctx.beginPath(); ctx.roundRect(-8, -84, 4, 10, 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(1, -85, 4, 10, 2); ctx.fill();
+      ctx.fillStyle = '#F5A623';
+      ctx.beginPath(); ctx.arc(-6, -85, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(3, -86, 3, 0, Math.PI * 2); ctx.fill();
+
+      // Head spot
+      ctx.fillStyle = spotColor;
+      ctx.beginPath(); ctx.ellipse(-4, -74, 3, 3, 0.2, 0, Math.PI * 2); ctx.fill();
+
+      // Eye white
       ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(-8, -32 + bounce, 6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Right eye white
-      ctx.beginPath();
-      ctx.arc(8, -32 + bounce, 6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Left pupil
-      ctx.fillStyle = T.playerEyes || '#1e293b';
-      ctx.beginPath();
-      ctx.arc(-8 + eyeOffset, -32 + bounce, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Right pupil
-      ctx.beginPath();
-      ctx.arc(8 + eyeOffset, -32 + bounce, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye highlights
+      ctx.beginPath(); ctx.arc(4, -76, 4, 0, Math.PI * 2); ctx.fill();
+      // Pupil
+      ctx.fillStyle = darkColor;
+      ctx.beginPath(); ctx.arc(5, -76, 2, 0, Math.PI * 2); ctx.fill();
+      // Highlight
       ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(-9 + eyeOffset, -33 + bounce, 1.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(7 + eyeOffset, -33 + bounce, 1.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(4.5, -77, 1, 0, Math.PI * 2); ctx.fill();
+
+      // Eyelashes
+      ctx.strokeStyle = darkColor;
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 4; i++) {
+        const angle = -Math.PI * 0.9 + i * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(4 + Math.cos(angle) * 4, -76 + Math.sin(angle) * 4);
+        ctx.lineTo(4 + Math.cos(angle) * 6, -76 + Math.sin(angle) * 6);
+        ctx.stroke();
+      }
 
       // Smile
-      ctx.strokeStyle = T.playerEyes || '#1e293b';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = darkColor;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.arc(0, -26, 8, 0.2, Math.PI - 0.2);
+      ctx.arc(6, -69, 3, 0.1, Math.PI * 0.6);
       ctx.stroke();
 
       // Blush
-      ctx.fillStyle = 'rgba(251, 113, 133, 0.4)';
-      ctx.beginPath();
-      ctx.ellipse(-14, -26, 4, 3, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(14, -26, 4, 3, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.35)';
+      ctx.beginPath(); ctx.ellipse(9, -72, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
 
       ctx.restore();
       ctx.restore();
