@@ -10,6 +10,7 @@
   let canvas;
   let descriptionPanel;
   let currentPlatform = null;
+  let starsCollected = 0;
   let width, height;
 
   let currentTheme = 'light';
@@ -99,11 +100,93 @@
         { x: 500, y: 350, w: 180, h: 20, key: 'upwork', color: '#8b5cf6' },
         { x: 750, y: 280, w: 200, h: 20, key: 'workhuman', color: '#a855f7' },
         { x: 1000, y: 200, w: 220, h: 20, key: 'chulakov', color: '#c084fc' },
+        { x: 1290, y: 280, w: 180, h: 20, color: '#f59e0b' },
+        { x: 1530, y: 220, w: 150, h: 20, color: '#f97316' },
+        { x: 1740, y: 160, w: 160, h: 20, color: '#ef4444' },
+        { x: 1960, y: 250, w: 140, h: 20, color: '#ec4899' },
+        { x: 2160, y: 180, w: 170, h: 20, color: '#d946ef' },
+        { x: 2390, y: 280, w: 150, h: 20, color: '#10b981' },
+        { x: 2600, y: 200, w: 160, h: 20, color: '#14b8a6' },
+        { x: 2820, y: 130, w: 140, h: 20, color: '#06b6d4' },
+        { x: 3020, y: 200, w: 150, h: 20, color: '#0ea5e9' },
+        { x: 3230, y: 280, w: 160, h: 20, color: '#3b82f6' },
+        { x: 3450, y: 180, w: 150, h: 20, color: '#6366f1' },
+        { x: 3660, y: 100, w: 160, h: 20, color: '#84cc16' },
+        { x: 3880, y: 160, w: 140, h: 20, color: '#22c55e' },
+        { x: 4080, y: 240, w: 150, h: 20, color: '#eab308' },
+        { x: 4290, y: 160, w: 160, h: 20, color: '#f97316' },
+        { x: 4510, y: 90,  w: 150, h: 20, color: '#f43f5e' },
+        { x: 4720, y: 160, w: 160, h: 20, color: '#a855f7' },
+        { x: 4940, y: 240, w: 150, h: 20, color: '#2dd4bf' },
+        { x: 5150, y: 160, w: 160, h: 20, color: '#fbbf24' },
+        { x: 5370, y: 90,  w: 150, h: 20, color: '#60a5fa' },
+        { x: 5580, y: 160, w: 170, h: 20, color: '#c084fc' },
       ],
+    stars: [
+        // Between start and Toptal
+        { x: 180, y: 370 }, { x: 220, y: 340 },
+        // On/around Toptal
+        { x: 280, y: 370 }, { x: 380, y: 360 }, { x: 430, y: 330 },
+        // Between Toptal and Upwork
+        { x: 470, y: 310 },
+        // On/around Upwork
+        { x: 530, y: 320 }, { x: 610, y: 300 }, { x: 660, y: 280 },
+        // On/around WorkHuman
+        { x: 790, y: 250 }, { x: 870, y: 230 },
+        // Between WorkHuman and Chulakov
+        { x: 940, y: 200 }, { x: 970, y: 170 },
+        // On/around Chulakov
+        { x: 1030, y: 170 }, { x: 1120, y: 155 }, { x: 1190, y: 180 },
+        // Between Chulakov and final platform
+        { x: 1240, y: 240 }, { x: 1260, y: 210 },
+        // On final platform
+        { x: 1310, y: 250 }, { x: 1360, y: 240 }, { x: 1420, y: 250 },
+        // Platform 7 (orange)
+        { x: 1550, y: 190 }, { x: 1640, y: 200 },
+        // Platform 8 (red)
+        { x: 1760, y: 130 }, { x: 1860, y: 140 },
+        // Platform 9 (pink)
+        { x: 1980, y: 220 }, { x: 2060, y: 230 },
+        // Platform 10 (fuchsia)
+        { x: 2180, y: 150 }, { x: 2280, y: 160 },
+        // Platform 11 (emerald)
+        { x: 2410, y: 250 }, { x: 2510, y: 260 },
+        // Platform 12 (teal)
+        { x: 2620, y: 170 }, { x: 2720, y: 175 },
+        // Platform 13 (cyan)
+        { x: 2840, y: 100 }, { x: 2930, y: 110 },
+        // Platform 14 (sky)
+        { x: 3040, y: 170 }, { x: 3130, y: 180 },
+        // Platform 15 (blue)
+        { x: 3250, y: 250 }, { x: 3350, y: 255 },
+        // Platform 16 (indigo)
+        { x: 3470, y: 150 }, { x: 3560, y: 160 },
+        // Platform 17 (lime)
+        { x: 3680, y: 70  }, { x: 3780, y: 80  },
+        // Platform 18 (green)
+        { x: 3900, y: 130 }, { x: 3990, y: 140 },
+        // Platform 19 (yellow)
+        { x: 4100, y: 210 }, { x: 4190, y: 220 },
+        // Platform 20 (orange)
+        { x: 4310, y: 130 }, { x: 4400, y: 140 },
+        // Platform 21 (rose)
+        { x: 4530, y: 60  }, { x: 4620, y: 70  },
+        // Platform 22 (violet)
+        { x: 4740, y: 130 }, { x: 4830, y: 140 },
+        // Platform 23 (teal)
+        { x: 4960, y: 210 }, { x: 5050, y: 220 },
+        // Platform 24 (amber)
+        { x: 5170, y: 130 }, { x: 5260, y: 140 },
+        // Platform 25 (sky blue)
+        { x: 5390, y: 60  }, { x: 5480, y: 70  },
+        // Platform 26 (final)
+        { x: 5600, y: 130 }, { x: 5690, y: 140 }, { x: 5730, y: 135 },
+    ].map(s => ({ ...s, collected: false, animTimer: 0 })),
+    starsCollected: 0,
     particles: [],
     parallaxLayers: [],
     camera: { x: 0, y: 0 },
-    levelEnd: 2000,
+    levelEnd: 6000,
     gravity: 0.5, jumpForce: -12, moveSpeed: 5, keys: {}
   };
 
@@ -139,6 +222,9 @@
         game.player.vx = 0; game.player.vy = 0;
         game.player.rotation = 0;
         game.camera.x = 0;
+        game.stars.forEach(s => { s.collected = false; s.animTimer = 0; });
+        game.starsCollected = 0;
+        starsCollected = 0;
         hidePlatformInfo();
       } else if (!game.player.jumping) {
         game.player.vy = game.jumpForce;
@@ -211,6 +297,22 @@
     }
 
     p.squash += (1 - p.squash) * 0.15;
+
+    // Star collection
+    game.stars.forEach(star => {
+      if (star.collected) {
+        star.animTimer = Math.max(0, star.animTimer - 1);
+        return;
+      }
+      const dx = (p.x + p.w / 2) - star.x;
+      const dy = (p.y + p.h / 2) - star.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 28) {
+        star.collected = true;
+        star.animTimer = 30;
+        game.starsCollected++;
+        starsCollected = game.starsCollected;
+      }
+    });
     game.particles = game.particles.filter(pt => {
       pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.3; pt.life -= 0.02;
       return pt.life > 0;
@@ -304,7 +406,50 @@
         ctx.fillRect(pt.x - 3, pt.y - 3, 6, 6);
       });
       ctx.globalAlpha = 1;
-      
+
+      // ── STARS ─────────────────────────────────────────────────
+      const now = Date.now() * 0.003;
+      game.stars.forEach(star => {
+        if (star.collected && star.animTimer <= 0) return;
+
+        const pulse = Math.sin(now + star.x * 0.1) * 0.15 + 1;
+        const baseR = 10 * pulse;
+        const alpha = star.collected ? star.animTimer / 30 : 1;
+        const scale = star.collected ? 1 + (1 - star.animTimer / 30) * 1.5 : pulse;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(star.x, star.y);
+        ctx.scale(scale, scale);
+
+        // Glow
+        const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, baseR * 2);
+        glow.addColorStop(0, 'rgba(255, 220, 50, 0.6)');
+        glow.addColorStop(1, 'rgba(255, 180, 0, 0)');
+        ctx.beginPath();
+        ctx.arc(0, 0, baseR * 2, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+
+        // 5-pointed star shape
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const r = i % 2 === 0 ? baseR : baseR * 0.45;
+          const angle = (i * Math.PI) / 5 - Math.PI / 2;
+          i === 0 ? ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r)
+                  : ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+        }
+        ctx.closePath();
+        ctx.fillStyle = '#FFD700';
+        ctx.fill();
+        ctx.strokeStyle = '#FFA500';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.restore();
+      });
+      ctx.globalAlpha = 1;
+
       const p = game.player;
       ctx.save();
       ctx.translate(p.x + p.w / 2, p.y + p.h);
@@ -643,6 +788,7 @@
 <div class="container" style="--bg:{themes[currentTheme].bg}; --panelBg:{themes[currentTheme].panelBg}; --cardBorder:{themes[currentTheme].cardBorder}; --cardText:{themes[currentTheme].cardText}; --cardPeriod:{themes[currentTheme].cardPeriod}; --cardH3:{themes[currentTheme].cardH3};">
   <div class="game-wrapper">
     <canvas bind:this={canvas}></canvas>
+    <div class="star-counter">⭐ {starsCollected}</div>
     <select class="language-selector" value={$locale} on:change={handleLanguageChange}>
       {#each languageOptions as option}
         <option value={option.value}>{option.label}</option>
@@ -780,6 +926,27 @@
     justify-content: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     backdrop-filter: blur(10px);
+  }
+
+  .star-counter {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: var(--cardText);
+    padding: 0 16px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
   }
 
   .language-selector {
