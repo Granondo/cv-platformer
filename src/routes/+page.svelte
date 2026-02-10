@@ -63,12 +63,36 @@
     locale.set(event.target.value);
   }
 
+  const techs = [
+    { name: 'React',       color: '#61DAFB', colorLight: '#a8eeff', colorDark: '#0e9abf' },
+    { name: 'TypeScript',  color: '#3178C6', colorLight: '#6faee8', colorDark: '#1a4a8a' },
+    { name: 'Node.js',     color: '#339933', colorLight: '#6fcc6f', colorDark: '#1a5c1a' },
+    { name: 'Redux',       color: '#764ABC', colorLight: '#b085e0', colorDark: '#3d1f6e' },
+    { name: 'MobX',        color: '#FF9955', colorLight: '#ffc99a', colorDark: '#c85a00' },
+    { name: 'PostgreSQL',  color: '#336791', colorLight: '#6fa0c4', colorDark: '#1a3d5c' },
+    { name: 'MongoDB',     color: '#47A248', colorLight: '#84d085', colorDark: '#235c24' },
+    { name: 'Express',     color: '#888888', colorLight: '#bbbbbb', colorDark: '#444444' },
+    { name: 'Highcharts',  color: '#8087E8', colorLight: '#b3b8ff', colorDark: '#4a52b8' },
+    { name: 'Material UI', color: '#0081CB', colorLight: '#50b5f5', colorDark: '#004f80' },
+    { name: 'Draft.js',    color: '#6b8cba', colorLight: '#9cb5d8', colorDark: '#3a5a80' },
+    { name: 'JavaScript',  color: '#F7DF1E', colorLight: '#fff380', colorDark: '#b8a000' },
+    { name: 'CSS',         color: '#1572B6', colorLight: '#55a5e8', colorDark: '#0a3f70' },
+    { name: 'HTML',        color: '#E34F26', colorLight: '#f99272', colorDark: '#902200' },
+    { name: 'Git',         color: '#F05032', colorLight: '#f98a78', colorDark: '#a01a00' },
+    { name: 'React Router',color: '#CA4245', colorLight: '#e87f82', colorDark: '#7a1518' },
+    { name: 'Context API', color: '#00BCD4', colorLight: '#70e8f5', colorDark: '#007a8a' },
+  ];
+
   const game = {
     player: {
       x: 70, y: 390, w: 40, h: 60,
       vx: 0, vy: 0, jumping: false,
       squash: 1, onPlatform: null
     },
+    falling: false,
+    fallBubbles: [],
+    fallBubbleTimer: 0,
+    techQueue: [],
     platforms: [
         { x: 0, y: 450, w: 180, h: 20, color: '#3b82f6' },
         { x: 250, y: 400, w: 200, h: 20, key: 'toptal', color: '#6366f1' },
@@ -105,9 +129,21 @@
 
   function handleKeyDown(e) {
     game.keys[e.key] = true;
-    if (e.key === ' ' && !game.player.jumping) {
-      game.player.vy = game.jumpForce;
-      game.player.jumping = true;
+    if (e.key === ' ') {
+      if (game.falling) {
+        game.falling = false;
+        game.fallBubbles = [];
+        game.techQueue = [];
+        game.camera.y = 0;
+        game.player.x = 70; game.player.y = 390;
+        game.player.vx = 0; game.player.vy = 0;
+        game.player.rotation = 0;
+        game.camera.x = 0;
+        hidePlatformInfo();
+      } else if (!game.player.jumping) {
+        game.player.vy = game.jumpForce;
+        game.player.jumping = true;
+      }
     }
   }
 
@@ -185,7 +221,50 @@
        p.x = game.levelEnd;
        p.vx = 0;
     }
-    if (p.y > height) { p.y = 390; p.x = 70; p.vy = 0; game.camera.x = 0; hidePlatformInfo(); }
+    if (p.y > height + game.camera.y && !game.falling) {
+      game.falling = true;
+      hidePlatformInfo();
+    }
+
+    if (game.falling) {
+      // Cap fall speed so giraffe is always visible
+      if (p.vy > 4) p.vy = 4;
+      p.rotation = (p.rotation || 0) + 0.03;
+
+      game.camera.y += (p.y - game.camera.y - height * 0.4) * 0.08;
+
+      game.fallBubbleTimer++;
+      if (game.fallBubbleTimer > 18 && game.fallBubbles.length < 12) {
+        game.fallBubbleTimer = 0;
+        if (game.techQueue.length === 0) {
+          game.techQueue = [...techs].sort(() => Math.random() - 0.5);
+        }
+        const tech = game.techQueue.pop();
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 90 + Math.random() * 70;
+        const radius = 28 + Math.random() * 14;
+        game.fallBubbles.push({
+          ox: Math.cos(angle) * dist,
+          oy: Math.sin(angle) * dist,
+          text: tech.name,
+          color: tech.color,
+          colorLight: tech.colorLight,
+          colorDark: tech.colorDark,
+          radius,
+          angle,
+          orbitSpeed: (Math.random() - 0.5) * 0.012,
+          orbitDist: dist,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+
+      // Slowly orbit each bubble around the player
+      game.fallBubbles.forEach(b => {
+        b.angle += b.orbitSpeed;
+        b.ox = Math.cos(b.angle) * b.orbitDist;
+        b.oy = Math.sin(b.angle) * b.orbitDist;
+      });
+    }
   }
 
   function draw(ctx) {
@@ -229,6 +308,11 @@
       const p = game.player;
       ctx.save();
       ctx.translate(p.x + p.w / 2, p.y + p.h);
+      if (game.falling) {
+        ctx.translate(0, -43);
+        ctx.rotate(p.rotation || 0);
+        ctx.translate(0, 43);
+      }
 
       const time = Date.now() * 0.003;
       const legMove = p.vx !== 0 ? Math.sin(time * 10) * 5 : 0;
@@ -408,8 +492,98 @@
       ctx.fillStyle = 'rgba(251, 113, 133, 0.35)';
       ctx.beginPath(); ctx.ellipse(9, -72, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
 
-      ctx.restore();
-      ctx.restore();
+      ctx.restore(); // end player transform
+
+      // ── TECH BUBBLES (falling state) ───────────────────────────
+      if (game.falling) {
+        const cx = p.x + p.w / 2;
+        const cy = p.y + p.h / 2;
+        game.fallBubbles.forEach(b => {
+          const wobble = Math.sin(Date.now() * 0.002 + b.phase) * 3;
+          const bx = cx + b.ox + wobble;
+          const by = cy + b.oy;
+          const rad = b.radius;
+
+          // Transparent inner fill
+          const fill = ctx.createRadialGradient(bx, by, 0, bx, by, rad);
+          fill.addColorStop(0, 'rgba(255,255,255,0.06)');
+          fill.addColorStop(0.7, b.color + '18');
+          fill.addColorStop(1, b.color + '35');
+          ctx.beginPath();
+          ctx.arc(bx, by, rad, 0, Math.PI * 2);
+          ctx.fillStyle = fill;
+          ctx.fill();
+
+          // Thin colorful rim
+          ctx.beginPath();
+          ctx.arc(bx, by, rad, 0, Math.PI * 2);
+          ctx.strokeStyle = b.color + 'aa';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Large soft top-left highlight
+          const bigShine = ctx.createRadialGradient(
+            bx - rad * 0.4, by - rad * 0.45, 0,
+            bx - rad * 0.4, by - rad * 0.45, rad * 0.7
+          );
+          bigShine.addColorStop(0, 'rgba(255,255,255,0.55)');
+          bigShine.addColorStop(0.5, 'rgba(255,255,255,0.15)');
+          bigShine.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.beginPath();
+          ctx.arc(bx, by, rad, 0, Math.PI * 2);
+          ctx.fillStyle = bigShine;
+          ctx.fill();
+
+          // Small sharp specular dot
+          const spec = ctx.createRadialGradient(
+            bx - rad * 0.3, by - rad * 0.38, 0,
+            bx - rad * 0.3, by - rad * 0.38, rad * 0.2
+          );
+          spec.addColorStop(0, 'rgba(255,255,255,0.95)');
+          spec.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.beginPath();
+          ctx.arc(bx, by, rad, 0, Math.PI * 2);
+          ctx.fillStyle = spec;
+          ctx.fill();
+
+          // Bottom-right secondary glow
+          const secShine = ctx.createRadialGradient(
+            bx + rad * 0.35, by + rad * 0.38, 0,
+            bx + rad * 0.35, by + rad * 0.38, rad * 0.3
+          );
+          secShine.addColorStop(0, b.color + '55');
+          secShine.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.beginPath();
+          ctx.arc(bx, by, rad, 0, Math.PI * 2);
+          ctx.fillStyle = secShine;
+          ctx.fill();
+
+          // Text
+          const fontSize = Math.max(9, rad * 0.36);
+          ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
+          ctx.fillStyle = b.colorDark;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(255,255,255,0.6)';
+          ctx.shadowBlur = 3;
+          ctx.fillText(b.text, bx, by);
+          ctx.shadowBlur = 0;
+        });
+      }
+
+      ctx.restore(); // end camera transform
+
+      // ── FALLING OVERLAY HINT ───────────────────────────────────
+      if (game.falling) {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, Arial, sans-serif';
+        ctx.shadowColor = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 6;
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fillText('Press SPACE to return to the start', width / 2, height - 40);
+        ctx.shadowBlur = 0;
+      }
   }
 
   let gameInitialized = false;
