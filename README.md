@@ -1,42 +1,45 @@
-# sv
+# CV Platformer
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+An interactive resume presented as a 2D platformer game. Control a giraffe character that jumps between platforms — each platform represents a job in my career. Land on a platform to read about the role, tech stack, and achievements.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Playable 2D platformer with physics (gravity, jumping, collision)
+- Giraffe character with animated scarf and walking legs
+- Each platform represents a real job experience
+- Side panel displays job details when landing on a platform
+- Light / dark theme toggle
+- English, Russian and Japanese language support
+- Endless fall mode with orbiting tech bubbles when you fall off the edge
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Controls
 
-To recreate this project with the same configuration:
+| Key | Action |
+|-----|--------|
+| `←` / `A` | Move left |
+| `→` / `D` | Move right |
+| `Space` | Jump / return to start (when falling) |
 
-```sh
-# recreate this project
-pnpm dlx sv create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright --install pnpm cv-platformer
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+## Getting Started
 
 ```sh
-npm run build
+pnpm install
+pnpm dev
 ```
 
-You can preview the production build with `npm run preview`.
+Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Build
+
+```sh
+pnpm build
+pnpm preview
+```
+
+## Tech Stack
+
+- [SvelteKit](https://kit.svelte.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [svelte-i18n](https://github.com/kaisermann/svelte-i18n)
+- Canvas API for game rendering
+- [Vite](https://vitejs.dev/)
