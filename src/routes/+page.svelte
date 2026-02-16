@@ -464,9 +464,9 @@
         const company = lang.platforms[platform.key]?.company;
         if (company) {
           ctx.fillStyle = '#d4af37';
-          ctx.font = '7px "Press Start 2P", monospace';
+          ctx.font = '9px "Press Start 2P", monospace';
           ctx.textAlign = 'center';
-          ctx.fillText(company, px + pw / 2, py + ph + 14);
+          ctx.fillText(company, px + pw / 2, py + ph + 18);
         }
       }
     });

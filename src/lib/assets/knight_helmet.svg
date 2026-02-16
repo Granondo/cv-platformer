@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" fill="#0a0a2e"/>
+
+  <!-- Red plume (top) -->
+  <rect x="28" y="0"  width="8"  height="6"  fill="#ff4040"/>
+  <rect x="26" y="4"  width="12" height="6"  fill="#cc2020"/>
+  <rect x="24" y="8"  width="16" height="6"  fill="#8b0000"/>
+
+  <!-- Cheek guards -->
+  <rect x="4"  y="26" width="8"  height="22" fill="#1a3a6a"/>
+  <rect x="4"  y="26" width="8"  height="4"  fill="#4a7cd8"/>
+  <rect x="52" y="26" width="8"  height="22" fill="#1a3a6a"/>
+  <rect x="52" y="26" width="8"  height="4"  fill="#4a7cd8"/>
+
+  <!-- Helmet main shadow layer -->
+  <rect x="12" y="12" width="40" height="38" fill="#1a3a6a"/>
+  <!-- Helmet main body -->
+  <rect x="12" y="12" width="38" height="36" fill="#2a5cb8"/>
+  <!-- Top highlight -->
+  <rect x="12" y="12" width="38" height="5"  fill="#4a7cd8"/>
+  <!-- Right highlight strip -->
+  <rect x="44" y="12" width="6"  height="36" fill="#4a7cd8"/>
+
+  <!-- Gold top rim -->
+  <rect x="12" y="12" width="40" height="3"  fill="#d4af37"/>
+  <!-- Gold top-corner pips -->
+  <rect x="12" y="12" width="6"  height="3"  fill="#f0c840"/>
+  <rect x="46" y="12" width="6"  height="3"  fill="#f0c840"/>
+  <!-- Gold bottom rim -->
+  <rect x="12" y="46" width="40" height="3"  fill="#d4af37"/>
+
+  <!-- Visor dark slot -->
+  <rect x="14" y="28" width="36" height="12" fill="#080810"/>
+
+  <!-- Left eye glow -->
+  <rect x="16" y="30" width="14" height="8"  fill="#2244aa"/>
+  <rect x="17" y="31" width="8"  height="5"  fill="#4466dd"/>
+  <rect x="18" y="32" width="4"  height="3"  fill="#88aaff"/>
+
+  <!-- Right eye glow -->
+  <rect x="34" y="30" width="14" height="8"  fill="#2244aa"/>
+  <rect x="35" y="31" width="8"  height="5"  fill="#4466dd"/>
+  <rect x="40" y="32" width="4"  height="3"  fill="#88aaff"/>
+</svg>
