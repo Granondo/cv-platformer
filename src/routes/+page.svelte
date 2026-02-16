@@ -13,7 +13,7 @@
   let starsCollected = 0;
   let width, height;
 
-  let currentTheme = 'light';
+  let currentTheme = 'dark';
   const languageOptions = [
     { value: 'en', label: 'English' },
     { value: 'ru', label: 'Русский' },
@@ -22,42 +22,43 @@
 
   const themes = {
     light: {
-      bg: '#f0f9ff',
-      panelBg: '#ffffff',
-      player1: '#22d3ee',
-      player2: '#06b6d4',
-      playerEyes: '#1e293b',
-      spring: '#94a3b8',
-      platformShadow: 'rgba(0,0,0,0.1)',
-      platformTop: 'rgba(255,255,255,0.5)',
-      text: '#334155',
-      cardBorder: '#e0f2fe',
-      cardText: '#334155',
-      cardPeriod: '#64748b',
-      cardH3: '#0891b2',
-      parallax: ['#e0f2fe', '#bae6fd', '#7dd3fc']
+      bg: '#5888b0',
+      panelBg: '#d8c89a',
+      player1: '#2a5cb8',
+      player2: '#1a3a80',
+      playerEyes: '#0a0a1a',
+      spring: '#8a8a8a',
+      platformShadow: 'rgba(0,0,0,0.35)',
+      platformTop: '#5aaa3a',
+      text: '#2a1a0a',
+      cardBorder: '#c8a860',
+      cardText: '#2a1a0a',
+      cardPeriod: '#6a4a1a',
+      cardH3: '#8a3a10',
+      parallax: ['#2a5070', '#3a6888', '#4a7898']
     },
     dark: {
-      bg: '#0f172a',
-      panelBg: '#1e293b',
-      player1: '#22d3ee',
-      player2: '#06b6d4',
-      playerEyes: '#0f172a',
-      spring: '#64748b',
-      platformShadow: 'rgba(0,0,0,0.3)',
-      platformTop: 'rgba(255,255,255,0.2)',
-      text: '#fff',
-      cardBorder: '#475569',
-      cardText: '#cbd5e1',
-      cardPeriod: '#94a3b8',
-      cardH3: '#22d3ee',
-      parallax: ['#1e293b', '#334155', '#475569']
+      bg: '#0a0a2e',
+      panelBg: '#0e0e1e',
+      player1: '#2a5cb8',
+      player2: '#1a3a80',
+      playerEyes: '#0a0a1a',
+      spring: '#3a3a6a',
+      platformShadow: 'rgba(0,0,0,0.6)',
+      platformTop: '#2a6a1a',
+      text: '#e8d8b0',
+      cardBorder: '#3a3020',
+      cardText: '#e8d8b0',
+      cardPeriod: '#a09070',
+      cardH3: '#d4af37',
+      parallax: ['#0e0e26', '#141440', '#1e1e60']
     }
-  }
+  };
 
   function toggleTheme(event) {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     event.currentTarget.blur();
+    if (gameInitialized) createParallax();
   }
 
   function handleLanguageChange(event) {
@@ -88,39 +89,39 @@
     player: {
       x: 70, y: 390, w: 40, h: 60,
       vx: 0, vy: 0, jumping: false,
-      squash: 1, onPlatform: null
+      squash: 1, onPlatform: null, facing: 1
     },
     falling: false,
     fallBubbles: [],
     fallBubbleTimer: 0,
     techQueue: [],
     platforms: [
-        { x: 0, y: 450, w: 180, h: 20, color: '#3b82f6' },
-        { x: 250, y: 400, w: 200, h: 20, key: 'toptal', color: '#6366f1' },
-        { x: 500, y: 350, w: 180, h: 20, key: 'upwork', color: '#8b5cf6' },
-        { x: 750, y: 280, w: 200, h: 20, key: 'workhuman', color: '#a855f7' },
-        { x: 1000, y: 200, w: 220, h: 20, key: 'chulakov', color: '#c084fc' },
-        { x: 1290, y: 280, w: 180, h: 20, color: '#f59e0b' },
-        { x: 1530, y: 220, w: 150, h: 20, color: '#f97316' },
-        { x: 1740, y: 160, w: 160, h: 20, color: '#ef4444' },
-        { x: 1960, y: 250, w: 140, h: 20, color: '#ec4899' },
-        { x: 2160, y: 180, w: 170, h: 20, color: '#d946ef' },
-        { x: 2390, y: 280, w: 150, h: 20, color: '#10b981' },
-        { x: 2600, y: 200, w: 160, h: 20, color: '#14b8a6' },
-        { x: 2820, y: 130, w: 140, h: 20, color: '#06b6d4' },
-        { x: 3020, y: 200, w: 150, h: 20, color: '#0ea5e9' },
-        { x: 3230, y: 280, w: 160, h: 20, color: '#3b82f6' },
-        { x: 3450, y: 180, w: 150, h: 20, color: '#6366f1' },
-        { x: 3660, y: 100, w: 160, h: 20, color: '#84cc16' },
-        { x: 3880, y: 160, w: 140, h: 20, color: '#22c55e' },
-        { x: 4080, y: 240, w: 150, h: 20, color: '#eab308' },
-        { x: 4290, y: 160, w: 160, h: 20, color: '#f97316' },
-        { x: 4510, y: 90,  w: 150, h: 20, color: '#f43f5e' },
-        { x: 4720, y: 160, w: 160, h: 20, color: '#a855f7' },
-        { x: 4940, y: 240, w: 150, h: 20, color: '#2dd4bf' },
-        { x: 5150, y: 160, w: 160, h: 20, color: '#fbbf24' },
-        { x: 5370, y: 90,  w: 150, h: 20, color: '#60a5fa' },
-        { x: 5580, y: 160, w: 170, h: 20, color: '#c084fc' },
+        { x: 0,    y: 450, w: 180, h: 20, color: '#6a7a5a' },
+        { x: 250,  y: 400, w: 200, h: 20, key: 'toptal',    color: '#8a7a50' },
+        { x: 500,  y: 350, w: 180, h: 20, key: 'upwork',    color: '#7a6a48' },
+        { x: 750,  y: 280, w: 200, h: 20, key: 'workhuman', color: '#806050' },
+        { x: 1000, y: 200, w: 220, h: 20, key: 'chulakov',  color: '#8a7040' },
+        { x: 1290, y: 280, w: 180, h: 20, color: '#5a6a7a' },
+        { x: 1530, y: 220, w: 150, h: 20, color: '#6a7a6a' },
+        { x: 1740, y: 160, w: 160, h: 20, color: '#7a6a7a' },
+        { x: 1960, y: 250, w: 140, h: 20, color: '#6a7a5a' },
+        { x: 2160, y: 180, w: 170, h: 20, color: '#5a6a8a' },
+        { x: 2390, y: 280, w: 150, h: 20, color: '#6a8a7a' },
+        { x: 2600, y: 200, w: 160, h: 20, color: '#7a8a6a' },
+        { x: 2820, y: 130, w: 140, h: 20, color: '#5a7a8a' },
+        { x: 3020, y: 200, w: 150, h: 20, color: '#6a7a8a' },
+        { x: 3230, y: 280, w: 160, h: 20, color: '#7a6a5a' },
+        { x: 3450, y: 180, w: 150, h: 20, color: '#5a6a7a' },
+        { x: 3660, y: 100, w: 160, h: 20, color: '#7a8a5a' },
+        { x: 3880, y: 160, w: 140, h: 20, color: '#6a7a6a' },
+        { x: 4080, y: 240, w: 150, h: 20, color: '#7a7a5a' },
+        { x: 4290, y: 160, w: 160, h: 20, color: '#6a5a7a' },
+        { x: 4510, y: 90,  w: 150, h: 20, color: '#8a7a6a' },
+        { x: 4720, y: 160, w: 160, h: 20, color: '#6a7a8a' },
+        { x: 4940, y: 240, w: 150, h: 20, color: '#7a8a7a' },
+        { x: 5150, y: 160, w: 160, h: 20, color: '#8a8a6a' },
+        { x: 5370, y: 90,  w: 150, h: 20, color: '#6a8a8a' },
+        { x: 5580, y: 160, w: 170, h: 20, color: '#7a6a8a' },
       ],
     stars: [
         // Between start and Toptal
@@ -221,6 +222,7 @@
         game.player.x = 70; game.player.y = 390;
         game.player.vx = 0; game.player.vy = 0;
         game.player.rotation = 0;
+        game.player.facing = 1;
         game.camera.x = 0;
         game.stars.forEach(s => { s.collected = false; s.animTimer = 0; });
         game.starsCollected = 0;
@@ -257,8 +259,8 @@
   function update() {
     const p = game.player;
 
-    if (game.keys['ArrowLeft'] || game.keys['a']) p.vx = -game.moveSpeed;
-    else if (game.keys['ArrowRight'] || game.keys['d']) p.vx = game.moveSpeed;
+    if (game.keys['ArrowLeft'] || game.keys['a']) { p.vx = -game.moveSpeed; p.facing = -1; }
+    else if (game.keys['ArrowRight'] || game.keys['d']) { p.vx = game.moveSpeed; p.facing = 1; }
     else p.vx *= 0.8;
 
     p.vy += game.gravity;
@@ -329,7 +331,6 @@
     }
 
     if (game.falling) {
-      // Cap fall speed so giraffe is always visible
       if (p.vy > 4) p.vy = 4;
       p.rotation = (p.rotation || 0) + 0.03;
 
@@ -360,7 +361,6 @@
         });
       }
 
-      // Slowly orbit each bubble around the player
       game.fallBubbles.forEach(b => {
         b.angle += b.orbitSpeed;
         b.ox = Math.cos(b.angle) * b.orbitDist;
@@ -370,391 +370,553 @@
   }
 
   function draw(ctx) {
-      const T = themes[currentTheme];
-      ctx.fillStyle = T.bg;
-      ctx.fillRect(0, 0, width, height);
-      ctx.save();
-      ctx.translate(-game.camera.x, -game.camera.y);
-      game.parallaxLayers.forEach(layer => {
-        ctx.fillStyle = layer.color;
-        const parallaxX = -game.camera.x * layer.speed;
-        layer.items.forEach(item => {
-          ctx.fillRect(item.x + parallaxX, item.y, item.w, item.h);
-        });
+    const T = themes[currentTheme];
+    ctx.imageSmoothingEnabled = false;
+
+    // ── BACKGROUND ────────────────────────────────────────────
+    ctx.fillStyle = T.bg;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.translate(-game.camera.x, -game.camera.y);
+
+    // ── PARALLAX LAYERS ────────────────────────────────────────
+    game.parallaxLayers.forEach((layer, layerIdx) => {
+      const parallaxX = -game.camera.x * layer.speed;
+      layer.items.forEach(item => {
+        const ci = layer.colorIdx ?? Math.min(layerIdx, T.parallax.length - 1);
+        ctx.fillStyle = item.color || T.parallax[Math.min(ci, T.parallax.length - 1)];
+        ctx.fillRect(Math.round(item.x + parallaxX), Math.round(item.y), item.w, item.h);
       });
-      game.platforms.forEach(platform => {
-        ctx.fillStyle = T.platformShadow;
-        ctx.fillRect(platform.x + 4, platform.y + 4, platform.w, platform.h);
-        ctx.fillStyle = platform.color;
-        ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
-        ctx.fillStyle = T.platformTop;
-        ctx.fillRect(platform.x, platform.y, platform.w, 3);
-        if (platform.key) {
-          const lang = translations[$locale] || translations.en;
-          const company = lang.platforms[platform.key]?.company;
-          if (company) {
-            ctx.fillStyle = T.text;
-            ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(company, platform.x + platform.w / 2, platform.y + platform.h + 15);
-          }
+    });
+
+    // ── PLATFORMS (pixel art stone bricks) ────────────────────
+    game.platforms.forEach(platform => {
+      const isKey = !!platform.key;
+      const px = platform.x, py = platform.y, pw = platform.w, ph = platform.h;
+
+      // Hard pixel shadow (no blur)
+      ctx.fillStyle = isKey ? '#3a2800' : '#222222';
+      ctx.fillRect(px + 4, py + 4, pw, ph);
+
+      // Stone body
+      ctx.fillStyle = isKey ? '#8a7840' : '#606070';
+      ctx.fillRect(px, py, pw, ph);
+
+      // Stone highlight (lighter left & top)
+      ctx.fillStyle = isKey ? '#a09050' : '#787888';
+      ctx.fillRect(px, py, pw, 2);
+      ctx.fillRect(px, py, 2, ph);
+
+      // Stone shadow (darker right & bottom)
+      ctx.fillStyle = isKey ? '#5a4820' : '#404050';
+      ctx.fillRect(px + pw - 2, py, 2, ph);
+      ctx.fillRect(px, py + ph - 2, pw, 2);
+
+      // Brick mortar lines
+      const mortarColor = isKey ? '#6a5828' : '#484858';
+      ctx.fillStyle = mortarColor;
+      // Horizontal mortar (one line dividing the platform)
+      ctx.fillRect(px + 2, py + Math.floor(ph / 2), pw - 4, 1);
+      // Vertical mortar lines (staggered rows)
+      const brickW = 18;
+      for (let row = 0; row < 2; row++) {
+        const rowY = py + (row === 0 ? 2 : Math.floor(ph / 2) + 1);
+        const rowH = row === 0 ? Math.floor(ph / 2) - 2 : ph - Math.floor(ph / 2) - 3;
+        const offset = row % 2 === 0 ? brickW / 2 : 0;
+        for (let bx = px + offset; bx < px + pw - 2; bx += brickW) {
+          ctx.fillRect(Math.round(bx), rowY, 1, rowH);
         }
-      });
-      game.particles.forEach(pt => {
-        ctx.fillStyle = pt.color;
-        ctx.globalAlpha = pt.life;
-        ctx.fillRect(pt.x - 3, pt.y - 3, 6, 6);
-      });
-      ctx.globalAlpha = 1;
-
-      // ── STARS ─────────────────────────────────────────────────
-      const now = Date.now() * 0.003;
-      game.stars.forEach(star => {
-        if (star.collected && star.animTimer <= 0) return;
-
-        const pulse = Math.sin(now + star.x * 0.1) * 0.15 + 1;
-        const baseR = 10 * pulse;
-        const alpha = star.collected ? star.animTimer / 30 : 1;
-        const scale = star.collected ? 1 + (1 - star.animTimer / 30) * 1.5 : pulse;
-
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.translate(star.x, star.y);
-        ctx.scale(scale, scale);
-
-        // Glow
-        const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, baseR * 2);
-        glow.addColorStop(0, 'rgba(255, 220, 50, 0.6)');
-        glow.addColorStop(1, 'rgba(255, 180, 0, 0)');
-        ctx.beginPath();
-        ctx.arc(0, 0, baseR * 2, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
-
-        // 5-pointed star shape
-        ctx.beginPath();
-        for (let i = 0; i < 10; i++) {
-          const r = i % 2 === 0 ? baseR : baseR * 0.45;
-          const angle = (i * Math.PI) / 5 - Math.PI / 2;
-          i === 0 ? ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r)
-                  : ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
-        }
-        ctx.closePath();
-        ctx.fillStyle = '#FFD700';
-        ctx.fill();
-        ctx.strokeStyle = '#FFA500';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        ctx.restore();
-      });
-      ctx.globalAlpha = 1;
-
-      const p = game.player;
-      ctx.save();
-      ctx.translate(p.x + p.w / 2, p.y + p.h);
-      if (game.falling) {
-        ctx.translate(0, -43);
-        ctx.rotate(p.rotation || 0);
-        ctx.translate(0, 43);
       }
 
-      const time = Date.now() * 0.003;
-      const legMove = p.vx !== 0 ? Math.sin(time * 10) * 5 : 0;
-
-      // Giraffe colors
-      const bodyColor = '#F5A623';
-      const spotColor = '#8B4513';
-      const neckColor = '#F0A030';
-      const darkColor = '#5C3010';
-
-      // ── BACK LEGS ──────────────────────────────────────────────
-      ctx.fillStyle = bodyColor;
-      // Back left
-      ctx.beginPath();
-      ctx.roundRect(-14, -18, 6, 20, 3);
-      ctx.fill();
-      // Back right
-      ctx.beginPath();
-      ctx.roundRect(8, -18, 6, 20, 3);
-      ctx.fill();
-
-      // ── BODY ──────────────────────────────────────────────────
-      ctx.fillStyle = bodyColor;
-      ctx.beginPath();
-      ctx.ellipse(0, -28, 17, 14, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Body spots
-      ctx.fillStyle = spotColor;
-      ctx.beginPath(); ctx.ellipse(-9, -26, 4, 5, 0.5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(7, -30, 3, 4, -0.3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(2, -22, 3, 3, 0.2, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(-3, -34, 3, 3, -0.1, 0, Math.PI * 2); ctx.fill();
-
-      // ── NECK ──────────────────────────────────────────────────
-      ctx.fillStyle = neckColor;
-      ctx.beginPath();
-      ctx.moveTo(-7, -40);
-      ctx.lineTo(7, -40);
-      ctx.lineTo(5, -66);
-      ctx.lineTo(-5, -66);
-      ctx.closePath();
-      ctx.fill();
-
-      // Neck spots
-      ctx.fillStyle = spotColor;
-      ctx.beginPath(); ctx.ellipse(-3, -50, 3, 4, 0.3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(4, -58, 2, 3, -0.2, 0, Math.PI * 2); ctx.fill();
-
-      // ── SCARF ──────────────────────────────────────────────────
-      const scarfColors = ['#e63946', '#f4a261', '#e9c46a', '#2a9d8f'];
-      const flow = -p.vx * 5;
-      const wave = Math.sin(time * 8) * (Math.abs(p.vx) > 0.5 ? 4 : 1.5);
-      const scarfY = -54;
-      const scarfStripes = 4;
-
-      for (let i = 0; i < scarfStripes; i++) {
-        const offset = i * 3 - 4;
-        const cp1x = flow * 0.3;
-        const cp1y = scarfY + offset + wave;
-        const cp2x = flow * 0.7;
-        const cp2y = scarfY + offset + 8 - wave;
-        const endX = flow;
-        const endY = scarfY + offset + 5;
-
-        ctx.beginPath();
-        ctx.moveTo(-3, scarfY + offset);
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
-        ctx.strokeStyle = scarfColors[i];
-        ctx.lineWidth = 3.5;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+      // Grass top (3 layers)
+      const grassTop = currentTheme === 'dark' ? '#1a5a10' : '#3a8a1a';
+      const grassMid = currentTheme === 'dark' ? '#2a7a1a' : '#5aaa2a';
+      const grassTip = currentTheme === 'dark' ? '#38a020' : '#70cc30';
+      ctx.fillStyle = grassMid;
+      ctx.fillRect(px, py - 4, pw, 4);
+      ctx.fillStyle = grassTop;
+      ctx.fillRect(px, py - 6, pw, 2);
+      // Pixel grass tufts
+      ctx.fillStyle = grassTip;
+      for (let gx = px + 4; gx < px + pw - 4; gx += 10) {
+        ctx.fillRect(gx,     py - 8, 2, 2);
+        ctx.fillRect(gx + 4, py - 9, 2, 3);
+        ctx.fillRect(gx + 7, py - 7, 2, 1);
       }
 
-      // Scarf knot on the neck
-      ctx.fillStyle = '#e63946';
-      ctx.beginPath();
-      ctx.ellipse(0, scarfY + 4, 6, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#c1121f';
-      ctx.beginPath();
-      ctx.ellipse(0, scarfY + 4, 3, 3, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // ── FRONT LEGS (animated) ──────────────────────────────────
-      ctx.fillStyle = bodyColor;
-      // Front left
-      ctx.save();
-      ctx.translate(-9, -22);
-      ctx.rotate(legMove * 0.04);
-      ctx.beginPath();
-      ctx.roundRect(-3, 0, 6, 22, 3);
-      ctx.fill();
-      ctx.fillStyle = darkColor;
-      ctx.beginPath();
-      ctx.roundRect(-3, 18, 7, 5, 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Front right
-      ctx.save();
-      ctx.translate(9, -22);
-      ctx.rotate(-legMove * 0.04);
-      ctx.fillStyle = bodyColor;
-      ctx.beginPath();
-      ctx.roundRect(-3, 0, 6, 22, 3);
-      ctx.fill();
-      ctx.fillStyle = darkColor;
-      ctx.beginPath();
-      ctx.roundRect(-3, 18, 7, 5, 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Back hooves
-      ctx.fillStyle = darkColor;
-      ctx.beginPath(); ctx.roundRect(-14, -1, 7, 5, 2); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(8, -1, 7, 5, 2); ctx.fill();
-
-      // ── HEAD ──────────────────────────────────────────────────
-      ctx.fillStyle = bodyColor;
-      ctx.beginPath();
-      ctx.ellipse(0, -73, 10, 9, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Snout
-      ctx.fillStyle = '#F8C07A';
-      ctx.beginPath();
-      ctx.ellipse(5, -70, 6, 5, 0.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Nostrils
-      ctx.fillStyle = darkColor;
-      ctx.beginPath(); ctx.ellipse(4, -69, 1.2, 0.8, 0.3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(7, -68, 1.2, 0.8, 0.3, 0, Math.PI * 2); ctx.fill();
-
-      // Ossicones (horns)
-      ctx.fillStyle = spotColor;
-      ctx.beginPath(); ctx.roundRect(-8, -84, 4, 10, 2); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(1, -85, 4, 10, 2); ctx.fill();
-      ctx.fillStyle = '#F5A623';
-      ctx.beginPath(); ctx.arc(-6, -85, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(3, -86, 3, 0, Math.PI * 2); ctx.fill();
-
-      // Head spot
-      ctx.fillStyle = spotColor;
-      ctx.beginPath(); ctx.ellipse(-4, -74, 3, 3, 0.2, 0, Math.PI * 2); ctx.fill();
-
-      // Eye white
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath(); ctx.arc(4, -76, 4, 0, Math.PI * 2); ctx.fill();
-      // Pupil
-      ctx.fillStyle = darkColor;
-      ctx.beginPath(); ctx.arc(5, -76, 2, 0, Math.PI * 2); ctx.fill();
-      // Highlight
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath(); ctx.arc(4.5, -77, 1, 0, Math.PI * 2); ctx.fill();
-
-      // Eyelashes
-      ctx.strokeStyle = darkColor;
-      ctx.lineWidth = 1;
-      for (let i = 0; i < 4; i++) {
-        const angle = -Math.PI * 0.9 + i * 0.3;
-        ctx.beginPath();
-        ctx.moveTo(4 + Math.cos(angle) * 4, -76 + Math.sin(angle) * 4);
-        ctx.lineTo(4 + Math.cos(angle) * 6, -76 + Math.sin(angle) * 6);
-        ctx.stroke();
+      // Gold trim for key (job) platforms
+      if (isKey) {
+        ctx.fillStyle = '#d4af37';
+        ctx.fillRect(px, py - 4, pw, 2);
+        ctx.fillRect(px, py - 4, 2, ph + 4);
+        ctx.fillRect(px + pw - 2, py - 4, 2, ph + 4);
+        ctx.fillRect(px, py + ph - 2, pw, 2);
+        // Corner ornaments
+        ctx.fillStyle = '#f0c840';
+        ctx.fillRect(px, py - 4, 4, 4);
+        ctx.fillRect(px + pw - 4, py - 4, 4, 4);
       }
 
-      // Smile
-      ctx.strokeStyle = darkColor;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(6, -69, 3, 0.1, Math.PI * 0.6);
-      ctx.stroke();
-
-      // Blush
-      ctx.fillStyle = 'rgba(251, 113, 133, 0.35)';
-      ctx.beginPath(); ctx.ellipse(9, -72, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
-
-      ctx.restore(); // end player transform
-
-      // ── TECH BUBBLES (falling state) ───────────────────────────
-      if (game.falling) {
-        const cx = p.x + p.w / 2;
-        const cy = p.y + p.h / 2;
-        game.fallBubbles.forEach(b => {
-          const wobble = Math.sin(Date.now() * 0.002 + b.phase) * 3;
-          const bx = cx + b.ox + wobble;
-          const by = cy + b.oy;
-          const rad = b.radius;
-
-          // Transparent inner fill
-          const fill = ctx.createRadialGradient(bx, by, 0, bx, by, rad);
-          fill.addColorStop(0, 'rgba(255,255,255,0.06)');
-          fill.addColorStop(0.7, b.color + '18');
-          fill.addColorStop(1, b.color + '35');
-          ctx.beginPath();
-          ctx.arc(bx, by, rad, 0, Math.PI * 2);
-          ctx.fillStyle = fill;
-          ctx.fill();
-
-          // Thin colorful rim
-          ctx.beginPath();
-          ctx.arc(bx, by, rad, 0, Math.PI * 2);
-          ctx.strokeStyle = b.color + 'aa';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-
-          // Large soft top-left highlight
-          const bigShine = ctx.createRadialGradient(
-            bx - rad * 0.4, by - rad * 0.45, 0,
-            bx - rad * 0.4, by - rad * 0.45, rad * 0.7
-          );
-          bigShine.addColorStop(0, 'rgba(255,255,255,0.55)');
-          bigShine.addColorStop(0.5, 'rgba(255,255,255,0.15)');
-          bigShine.addColorStop(1, 'rgba(255,255,255,0)');
-          ctx.beginPath();
-          ctx.arc(bx, by, rad, 0, Math.PI * 2);
-          ctx.fillStyle = bigShine;
-          ctx.fill();
-
-          // Small sharp specular dot
-          const spec = ctx.createRadialGradient(
-            bx - rad * 0.3, by - rad * 0.38, 0,
-            bx - rad * 0.3, by - rad * 0.38, rad * 0.2
-          );
-          spec.addColorStop(0, 'rgba(255,255,255,0.95)');
-          spec.addColorStop(1, 'rgba(255,255,255,0)');
-          ctx.beginPath();
-          ctx.arc(bx, by, rad, 0, Math.PI * 2);
-          ctx.fillStyle = spec;
-          ctx.fill();
-
-          // Bottom-right secondary glow
-          const secShine = ctx.createRadialGradient(
-            bx + rad * 0.35, by + rad * 0.38, 0,
-            bx + rad * 0.35, by + rad * 0.38, rad * 0.3
-          );
-          secShine.addColorStop(0, b.color + '55');
-          secShine.addColorStop(1, 'rgba(255,255,255,0)');
-          ctx.beginPath();
-          ctx.arc(bx, by, rad, 0, Math.PI * 2);
-          ctx.fillStyle = secShine;
-          ctx.fill();
-
-          // Text
-          const fontSize = Math.max(9, rad * 0.36);
-          ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
-          ctx.fillStyle = b.colorDark;
+      // Company label
+      if (platform.key) {
+        const lang = translations[$locale] || translations.en;
+        const company = lang.platforms[platform.key]?.company;
+        if (company) {
+          ctx.fillStyle = '#d4af37';
+          ctx.font = '7px "Press Start 2P", monospace';
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.shadowColor = 'rgba(255,255,255,0.6)';
-          ctx.shadowBlur = 3;
-          ctx.fillText(b.text, bx, by);
-          ctx.shadowBlur = 0;
-        });
+          ctx.fillText(company, px + pw / 2, py + ph + 14);
+        }
       }
+    });
 
-      ctx.restore(); // end camera transform
+    // ── PARTICLES ──────────────────────────────────────────────
+    game.particles.forEach(pt => {
+      ctx.fillStyle = pt.color;
+      ctx.globalAlpha = pt.life;
+      ctx.fillRect(Math.round(pt.x - 3), Math.round(pt.y - 3), 6, 6);
+    });
+    ctx.globalAlpha = 1;
 
-      // ── FALLING OVERLAY HINT ───────────────────────────────────
-      if (game.falling) {
+    // ── COINS (collectibles) ───────────────────────────────────
+    const now = Date.now() * 0.003;
+    game.stars.forEach(star => {
+      if (star.collected && star.animTimer <= 0) return;
+
+      const bobY = Math.sin(now + star.x * 0.08) * 3;
+      const alpha = star.collected ? star.animTimer / 30 : 1;
+      const scale = star.collected ? 1 + (1 - star.animTimer / 30) * 1.5 : 1;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(Math.round(star.x), Math.round(star.y + bobY));
+      ctx.scale(scale, scale);
+
+      // Coin body
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(-6, -8, 12, 16);
+      // Highlight (top-left)
+      ctx.fillStyle = '#f0c840';
+      ctx.fillRect(-6, -8, 4, 16);
+      ctx.fillRect(-6, -8, 12, 4);
+      // Shadow (bottom-right)
+      ctx.fillStyle = '#8a6a10';
+      ctx.fillRect(2, -8, 4, 16);
+      ctx.fillRect(-6, 4, 12, 4);
+      // Coin rim pixel border
+      ctx.fillStyle = '#b89020';
+      ctx.fillRect(-6, -8, 2, 2);
+      ctx.fillRect(4, -8, 2, 2);
+      ctx.fillRect(-6, 6, 2, 2);
+      ctx.fillRect(4, 6, 2, 2);
+      // Inner star symbol
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-1, -5, 2, 10);  // vertical bar
+      ctx.fillRect(-5, -1, 10, 2);  // horizontal bar
+      ctx.fillRect(-3, -4, 2, 2);   // top-left pip
+      ctx.fillRect(1,  -4, 2, 2);   // top-right pip
+      ctx.fillRect(-3,  2, 2, 2);   // bottom-left pip
+      ctx.fillRect(1,   2, 2, 2);   // bottom-right pip
+
+      ctx.restore();
+    });
+    ctx.globalAlpha = 1;
+
+    // ── PIXEL ART KNIGHT ──────────────────────────────────────
+    const p = game.player;
+    ctx.save();
+    ctx.translate(Math.round(p.x + p.w / 2), Math.round(p.y + p.h));
+
+    if (game.falling) {
+      ctx.translate(0, -30);
+      ctx.rotate(p.rotation || 0);
+      ctx.translate(0, 30);
+    }
+
+    // Flip for facing direction
+    if ((p.facing || 1) < 0) ctx.scale(-1, 1);
+
+    const time = Date.now() * 0.003;
+    const isMoving = Math.abs(p.vx) > 0.3;
+    const legStep = isMoving ? Math.sin(time * 10) : 0;
+
+    // Knight color palette
+    const A1 = '#2a5cb8'; // armor blue (mid)
+    const A2 = '#4a7cd8'; // armor highlight
+    const A3 = '#1a3a6a'; // armor shadow
+    const G1 = '#d4af37'; // gold (mid)
+    const G2 = '#f0c840'; // gold highlight
+    const G3 = '#8a6a10'; // gold shadow
+    const R1 = '#8b0000'; // cape/plume dark red
+    const R2 = '#cc2020'; // cape highlight
+    const BT = '#1a1a2a'; // boot dark
+    const BL = '#3a3a4a'; // boot lighter
+
+    // ── CAPE (behind body) ─────────────────────────────────────
+    const capeFlow = -p.vx * 4;
+    const capeWave = Math.sin(time * 7) * (isMoving ? 2.5 : 0.8);
+    ctx.beginPath();
+    ctx.moveTo(-4, -44);
+    ctx.bezierCurveTo(
+      -6 + capeFlow * 0.3, -44 + capeWave * 0.5,
+      -10 + capeFlow * 0.65, -24 + capeWave,
+      -14 + capeFlow, -4 + capeWave * 0.3
+    );
+    ctx.lineTo(-6 + capeFlow * 0.5, -2);
+    ctx.lineTo(-4, -44);
+    ctx.closePath();
+    ctx.fillStyle = R1;
+    ctx.fill();
+    // Cape highlight strip
+    ctx.fillStyle = R2;
+    ctx.fillRect(-5, -44, 2, 40);
+
+    // ── LEFT LEG ──────────────────────────────────────────────
+    ctx.save();
+    ctx.translate(-7, -22);
+    ctx.rotate(legStep * 0.15);
+    ctx.fillStyle = A3;
+    ctx.fillRect(-4, 0, 8, 14);  // shadow layer
+    ctx.fillStyle = A1;
+    ctx.fillRect(-4, 0, 8, 12);  // main
+    ctx.fillStyle = A2;
+    ctx.fillRect(-4, 0, 8, 3);   // top highlight
+    ctx.fillStyle = G1;
+    ctx.fillRect(-5, 8, 10, 3);  // knee gold ring
+    ctx.fillStyle = G2;
+    ctx.fillRect(-5, 8, 10, 1);
+    ctx.restore();
+
+    // ── RIGHT LEG ─────────────────────────────────────────────
+    ctx.save();
+    ctx.translate(7, -22);
+    ctx.rotate(-legStep * 0.15);
+    ctx.fillStyle = A3;
+    ctx.fillRect(-4, 0, 8, 14);
+    ctx.fillStyle = A1;
+    ctx.fillRect(-4, 0, 8, 12);
+    ctx.fillStyle = A2;
+    ctx.fillRect(-4, 0, 8, 3);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-5, 8, 10, 3);
+    ctx.fillStyle = G2;
+    ctx.fillRect(-5, 8, 10, 1);
+    ctx.restore();
+
+    // ── LEFT BOOT ─────────────────────────────────────────────
+    ctx.save();
+    ctx.translate(-7, -10);
+    ctx.rotate(legStep * 0.1);
+    ctx.fillStyle = BT;
+    ctx.fillRect(-6, 0, 12, 10);   // main boot
+    ctx.fillStyle = BL;
+    ctx.fillRect(-6, 0, 12, 2);    // boot highlight
+    ctx.fillStyle = G1;
+    ctx.fillRect(-6, 6, 14, 2);    // gold spur band
+    ctx.fillStyle = G3;
+    ctx.fillRect(4, 0, 2, 10);     // boot shadow
+    ctx.restore();
+
+    // ── RIGHT BOOT ────────────────────────────────────────────
+    ctx.save();
+    ctx.translate(7, -10);
+    ctx.rotate(-legStep * 0.1);
+    ctx.fillStyle = BT;
+    ctx.fillRect(-6, 0, 12, 10);
+    ctx.fillStyle = BL;
+    ctx.fillRect(-6, 0, 12, 2);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-6, 6, 14, 2);
+    ctx.fillStyle = G3;
+    ctx.fillRect(4, 0, 2, 10);
+    ctx.restore();
+
+    // ── BELT ──────────────────────────────────────────────────
+    ctx.fillStyle = '#3a1a08';
+    ctx.fillRect(-16, -28, 32, 6);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-5, -28, 10, 6);  // buckle plate
+    ctx.fillStyle = G2;
+    ctx.fillRect(-4, -27, 4, 2);   // buckle highlight
+    ctx.fillStyle = G3;
+    ctx.fillRect(-5, -24, 10, 2);  // buckle shadow
+
+    // ── BODY / CHEST PLATE ────────────────────────────────────
+    // Base shadow layer
+    ctx.fillStyle = A3;
+    ctx.fillRect(-14, -46, 28, 18);
+    // Main armor
+    ctx.fillStyle = A1;
+    ctx.fillRect(-14, -46, 26, 17);
+    // Top highlight strip
+    ctx.fillStyle = A2;
+    ctx.fillRect(-14, -46, 26, 4);
+    // Right edge highlight
+    ctx.fillStyle = A2;
+    ctx.fillRect(8, -46, 4, 18);
+    // Gold cross emblem
+    ctx.fillStyle = G1;
+    ctx.fillRect(-2, -44, 4, 14);    // vertical
+    ctx.fillRect(-8, -38, 16, 4);    // horizontal
+    ctx.fillStyle = G2;
+    ctx.fillRect(-1, -43, 2, 2);     // top gem
+    ctx.fillRect(-7, -37, 2, 2);     // left pip
+    ctx.fillRect(5, -37, 2, 2);      // right pip
+    ctx.fillStyle = G3;
+    ctx.fillRect(-2, -32, 4, 2);     // cross base shadow
+
+    // ── SHOULDER PADS ─────────────────────────────────────────
+    // Left
+    ctx.fillStyle = A3;
+    ctx.fillRect(-22, -48, 10, 14);
+    ctx.fillStyle = A1;
+    ctx.fillRect(-22, -48, 10, 12);
+    ctx.fillStyle = A2;
+    ctx.fillRect(-22, -48, 10, 3);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-22, -40, 10, 2);  // trim
+    // Right
+    ctx.fillStyle = A3;
+    ctx.fillRect(12, -48, 10, 14);
+    ctx.fillStyle = A1;
+    ctx.fillRect(12, -48, 10, 12);
+    ctx.fillStyle = A2;
+    ctx.fillRect(12, -48, 10, 3);
+    ctx.fillStyle = G1;
+    ctx.fillRect(12, -40, 10, 2);
+
+    // ── LEFT ARM ──────────────────────────────────────────────
+    ctx.save();
+    ctx.translate(-18, -43);
+    ctx.rotate(-legStep * 0.12);  // arm swings opposite leg
+    ctx.fillStyle = A3;
+    ctx.fillRect(-3, 0, 7, 15);
+    ctx.fillStyle = A1;
+    ctx.fillRect(-3, 0, 7, 14);
+    ctx.fillStyle = A2;
+    ctx.fillRect(-3, 0, 7, 3);
+    ctx.fillStyle = A3;
+    ctx.fillRect(-3, 0, 2, 14);
+    // Gauntlet
+    ctx.fillStyle = A3;
+    ctx.fillRect(-4, 13, 8, 8);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-4, 13, 8, 2);
+    ctx.fillRect(-4, 18, 8, 2);
+    ctx.restore();
+
+    // ── RIGHT ARM (holds shovel) ───────────────────────────────
+    ctx.save();
+    ctx.translate(14, -43);
+    ctx.rotate(legStep * 0.12);
+    ctx.fillStyle = A3;
+    ctx.fillRect(-3, 0, 7, 15);
+    ctx.fillStyle = A1;
+    ctx.fillRect(-3, 0, 7, 14);
+    ctx.fillStyle = A2;
+    ctx.fillRect(-3, 0, 7, 3);
+    ctx.fillStyle = A2;
+    ctx.fillRect(2, 0, 2, 14);
+    // Gauntlet
+    ctx.fillStyle = A3;
+    ctx.fillRect(-3, 13, 8, 8);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-3, 13, 8, 2);
+    ctx.fillRect(-3, 18, 8, 2);
+    // Shovel handle (wood)
+    ctx.fillStyle = '#7a4a18';
+    ctx.fillRect(2, 19, 3, 22);
+    ctx.fillStyle = '#9a6a28';
+    ctx.fillRect(2, 19, 1, 22);
+    // Shovel head (metal)
+    ctx.fillStyle = '#9a9aaa';
+    ctx.fillRect(-2, 39, 10, 6);
+    ctx.fillStyle = '#ccccdd';
+    ctx.fillRect(-2, 39, 10, 2);
+    ctx.fillStyle = '#6a6a7a';
+    ctx.fillRect(-2, 43, 10, 2);
+    ctx.restore();
+
+    // ── NECK / GORGET ─────────────────────────────────────────
+    ctx.fillStyle = A1;
+    ctx.fillRect(-6, -54, 12, 10);
+    ctx.fillStyle = A2;
+    ctx.fillRect(-6, -54, 12, 3);
+    ctx.fillStyle = G1;
+    ctx.fillRect(-8, -47, 16, 2);   // gorget bottom trim
+    ctx.fillRect(-6, -54, 12, 1);   // gorget top trim
+
+    // ── HELMET ────────────────────────────────────────────────
+    // Cheek guards
+    ctx.fillStyle = A1;
+    ctx.fillRect(-14, -68, 4, 16);
+    ctx.fillStyle = A2;
+    ctx.fillRect(-14, -68, 4, 3);
+    ctx.fillStyle = A3;
+    ctx.fillRect(-14, -54, 4, 2);
+    ctx.fillStyle = A1;
+    ctx.fillRect(10, -68, 4, 16);
+    ctx.fillStyle = A2;
+    ctx.fillRect(10, -68, 4, 3);
+    ctx.fillStyle = A3;
+    ctx.fillRect(10, -54, 4, 2);
+
+    // Helmet main
+    ctx.fillStyle = A3;
+    ctx.fillRect(-12, -72, 24, 20);   // shadow layer
+    ctx.fillStyle = A1;
+    ctx.fillRect(-12, -72, 22, 19);   // main
+    ctx.fillStyle = A2;
+    ctx.fillRect(-12, -72, 22, 5);    // top highlight
+    ctx.fillStyle = A2;
+    ctx.fillRect(6, -72, 4, 20);      // right highlight
+
+    // Helmet gold rim (top and bottom)
+    ctx.fillStyle = G1;
+    ctx.fillRect(-12, -72, 24, 2);    // top rim
+    ctx.fillRect(-12, -54, 24, 2);    // bottom rim
+    ctx.fillStyle = G2;
+    ctx.fillRect(-12, -72, 4, 2);     // top-left pip
+    ctx.fillRect(8, -72, 4, 2);       // top-right pip
+
+    // Visor (eye slit) - dark opening
+    ctx.fillStyle = '#080810';
+    ctx.fillRect(-10, -65, 20, 7);
+    // Eye glow - blue aura
+    ctx.fillStyle = '#2244aa';
+    ctx.fillRect(-9, -64, 18, 5);
+    ctx.fillStyle = '#4466dd';
+    ctx.fillRect(-8, -63, 7, 3);
+    ctx.fillStyle = '#88aaff';
+    ctx.fillRect(-7, -63, 3, 2);
+    ctx.fillStyle = '#4466dd';
+    ctx.fillRect(2, -63, 7, 3);
+    ctx.fillStyle = '#88aaff';
+    ctx.fillRect(4, -63, 3, 2);
+
+    // ── PLUME ─────────────────────────────────────────────────
+    const plumeY = Math.sin(time * 5) * (isMoving ? 1.5 : 0.4);
+    ctx.fillStyle = R1;
+    ctx.fillRect(-4, -76 + plumeY, 8, 6);       // base
+    ctx.fillStyle = R2;
+    ctx.fillRect(-3, -82 + plumeY * 1.2, 6, 8); // mid feather
+    ctx.fillRect(-4, -76 + plumeY, 2, 6);
+    ctx.fillStyle = R1;
+    ctx.fillRect(-2, -86 + plumeY * 1.4, 4, 6); // upper feather
+    ctx.fillStyle = '#ff4040';
+    ctx.fillRect(-2, -90 + plumeY * 1.6, 4, 6); // tip bright
+    ctx.fillStyle = '#ff8080';
+    ctx.fillRect(-1, -93 + plumeY * 1.8, 2, 5); // very tip
+
+    ctx.restore(); // end player transform
+
+    // ── TECH BOXES (falling state) ────────────────────────────
+    if (game.falling) {
+      const cx = p.x + p.w / 2;
+      const cy = p.y + p.h / 2;
+      game.fallBubbles.forEach(b => {
+        const wobble = Math.sin(Date.now() * 0.002 + b.phase) * 2;
+        const bx = Math.round(cx + b.ox + wobble);
+        const by = Math.round(cy + b.oy);
+        const rad = Math.round(b.radius);
+
+        // Box body
+        ctx.fillStyle = b.color + 'cc';
+        ctx.fillRect(bx - rad, by - rad, rad * 2, rad * 2);
+        // Top-left highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.45)';
+        ctx.fillRect(bx - rad, by - rad, rad * 2, 4);
+        ctx.fillRect(bx - rad, by - rad, 4, rad * 2);
+        // Bottom-right shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.fillRect(bx + rad - 4, by - rad, 4, rad * 2);
+        ctx.fillRect(bx - rad, by + rad - 4, rad * 2, 4);
+        // Pixel border
+        ctx.strokeStyle = b.colorDark || '#333';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bx - rad + 1, by - rad + 1, rad * 2 - 2, rad * 2 - 2);
+
+        // Text
+        const fontSize = Math.max(6, Math.floor(rad * 0.28));
+        ctx.font = `${fontSize}px "Press Start 2P", monospace`;
+        ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, Arial, sans-serif';
-        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-        ctx.shadowBlur = 6;
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillText('Press SPACE to return to the start', width / 2, height - 40);
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 3;
+        ctx.fillText(b.text, bx, by);
         ctx.shadowBlur = 0;
-      }
+      });
+    }
+
+    ctx.restore(); // end camera transform
+
+    // ── FALLING OVERLAY HINT ──────────────────────────────────
+    if (game.falling) {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '10px "Press Start 2P", monospace';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = '#f0c840';
+      ctx.fillText('PRESS SPACE TO RESTART', width / 2, height - 40);
+      ctx.shadowBlur = 0;
+    }
   }
 
   let gameInitialized = false;
 
+  function createParallax() {
+    game.parallaxLayers = [];
+
+    // Stars layer (dark theme only)
+    if (currentTheme === 'dark') {
+      const starItems = [];
+      const totalW = game.levelEnd * 2;
+      for (let i = 0; i < 180; i++) {
+        const sz = i % 6 === 0 ? 4 : i % 3 === 0 ? 3 : 2;
+        starItems.push({
+          x: Math.random() * totalW,
+          y: Math.random() * (height * 0.75),
+          w: sz, h: sz,
+          color: i % 8 === 0 ? '#ffffc0' : i % 5 === 0 ? '#c0c0ff' : '#ffffff'
+        });
+      }
+      game.parallaxLayers.push({ speed: 0.05, items: starItems });
+    }
+
+    // Mountain layers (far → near)
+    const layerDefs = [
+      { speed: 0.12, count: 14, maxH: 220, minH: 90, maxW: 210, minW: 140 },
+      { speed: 0.28, count: 20, maxH: 140, minH: 50, maxW: 160, minW: 90 },
+      { speed: 0.55, count: 30, maxH: 80,  minH: 25, maxW: 100, minW: 55 },
+    ];
+
+    layerDefs.forEach((def, mountainIdx) => {
+      const items = [];
+      const totalW = game.levelEnd * 2;
+      const spacing = totalW / def.count;
+      for (let j = 0; j < def.count + 2; j++) {
+        const baseX = j * spacing + (Math.random() - 0.5) * spacing * 0.5;
+        const mH = def.minH + Math.random() * (def.maxH - def.minH);
+        const mW = def.minW + Math.random() * (def.maxW - def.minW);
+        // Build stepped mountain from columns (pixel art)
+        const cols = Math.floor(mW / 6);
+        for (let c = 0; c < cols; c++) {
+          const t = c / Math.max(cols - 1, 1);
+          const profile = 1 - Math.abs(t * 2 - 1); // triangle
+          const colH = Math.max(4, Math.round(mH * profile / 4) * 4);
+          items.push({ x: baseX + c * 6, y: height - colH, w: 6, h: colH });
+        }
+      }
+      game.parallaxLayers.push({ speed: def.speed, items, colorIdx: mountainIdx });
+    });
+  }
+
   $: if (!$isLoading && canvas && descriptionPanel && !gameInitialized) {
     gameInitialized = true;
     const ctx = canvas.getContext('2d');
-
-    function createParallax() {
-      game.parallaxLayers = [];
-      const layerCount = 3;
-      for (let i = 0; i < layerCount; i++) {
-        const speed = 0.2 + i * 0.2;
-        const color = themes[currentTheme].parallax[i];
-        const items = [];
-        for (let j = 0; j < 50; j++) {
-          items.push({
-            x: Math.random() * game.levelEnd * 2,
-            y: Math.random() * height,
-            w: 20 + Math.random() * 50,
-            h: 5 + Math.random() * 15
-          });
-        }
-        game.parallaxLayers.push({ speed, color, items });
-      }
-    }
 
     function resize() {
       const panelWidth = descriptionPanel.clientWidth;
@@ -788,7 +950,7 @@
 <div class="container" style="--bg:{themes[currentTheme].bg}; --panelBg:{themes[currentTheme].panelBg}; --cardBorder:{themes[currentTheme].cardBorder}; --cardText:{themes[currentTheme].cardText}; --cardPeriod:{themes[currentTheme].cardPeriod}; --cardH3:{themes[currentTheme].cardH3};">
   <div class="game-wrapper">
     <canvas bind:this={canvas}></canvas>
-    <div class="star-counter">⭐ {starsCollected}</div>
+    <div class="star-counter"><span class="star-icon">★</span> {starsCollected} / {game.stars.length}</div>
     <select class="language-selector" value={$locale} on:change={handleLanguageChange}>
       {#each languageOptions as option}
         <option value={option.value}>{option.label}</option>
@@ -846,7 +1008,8 @@
     margin: 0;
     background: var(--bg);
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-family: 'Press Start 2P', monospace;
+    image-rendering: pixelated;
   }
 
   .container {
@@ -865,130 +1028,173 @@
     display: block;
     width: 100%;
     height: 100%;
+    image-rendering: pixelated;
   }
-  
+
   .description-panel {
     width: 30%;
     max-width: 400px;
     background: var(--panelBg);
-    border-left: 1px solid var(--cardBorder);
+    border-left: 4px solid var(--cardBorder);
     color: var(--cardText);
     overflow-y: auto;
     transition: background 0.3s;
     display: flex;
     flex-direction: column;
+    box-shadow: -4px 0 0 rgba(0,0,0,0.5);
   }
 
   .instructions {
-    padding: 10px 40px;
-    border-bottom: 1px solid var(--cardBorder);
-    background: rgba(0, 0, 0, 0.02);
+    padding: 16px 24px;
+    border-bottom: 4px solid var(--cardBorder);
+    background: rgba(0, 0, 0, 0.15);
+    font-size: 8px;
+    line-height: 1.9;
+  }
+
+  .instructions p {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    line-height: 1.9;
+    margin: 0.7em 0;
   }
 
   .content {
-    padding: 40px;
+    padding: 24px;
   }
 
   .description-panel h3 {
     color: var(--cardH3);
     margin: 0 0 10px 0;
-    font-size: 24px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
   }
 
   .description-panel .period {
     color: var(--cardPeriod);
     margin-bottom: 20px;
-    font-size: 14px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    line-height: 1.6;
   }
 
   .description-panel p {
-    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 13px;
     line-height: 1.6;
-    margin: 1em 0;
+    margin: 0.8em 0;
   }
-  
+
   .theme-switcher {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 16px;
+    right: 16px;
     z-index: 100;
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.6);
+    border: 2px solid rgba(255,255,255,0.4);
     color: var(--cardText);
-    padding: 10px;
-    border-radius: 50%;
+    padding: 8px;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 20px;
-    width: 50px;
-    height: 50px;
+    font-size: 18px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
+  }
+
+  .theme-switcher:hover {
+    background: rgba(0,0,0,0.8);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+    transform: translate(2px, 2px);
+  }
+
+  .theme-switcher:active {
+    box-shadow: none;
+    transform: translate(4px, 4px);
   }
 
   .star-counter {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 16px;
+    left: 16px;
     z-index: 100;
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: var(--cardText);
-    padding: 0 16px;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: 600;
-    height: 50px;
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #d4af37;
+    color: #d4af37;
+    padding: 0 14px;
+    border-radius: 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    height: 44px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
+    gap: 8px;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
     pointer-events: none;
+    letter-spacing: 1px;
+  }
+
+  .star-icon {
+    font-family: sans-serif;
+    font-size: 20px;
+    line-height: 1;
+    position: relative;
+    top: -1px;
   }
 
   .language-selector {
     position: absolute;
-    top: 20px;
-    right: 80px;
+    top: 16px;
+    right: 72px;
     z-index: 100;
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.6);
+    border: 2px solid rgba(255,255,255,0.4);
     color: var(--cardText);
-    padding: 10px 15px;
-    border-radius: 25px;
+    padding: 0 12px;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    height: 50px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    height: 44px;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
     outline: none;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   .language-selector:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.8);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+    transform: translate(2px, 2px);
   }
 
   .language-selector option {
-    background: var(--panelBg);
-    color: var(--cardText);
-    padding: 10px;
+    background: #1a1a2a;
+    color: #e8d8b0;
+    padding: 8px;
+    font-family: 'Press Start 2P', monospace;
   }
 
   .section-title {
     color: var(--cardH3);
-    font-size: 18px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    line-height: 1.6;
     margin-top: 20px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--cardBorder);
-    padding-bottom: 5px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--cardBorder);
+    padding-bottom: 6px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
   }
 
   .tech-stack {
-    font-size: 14px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 13px !important;
     color: var(--cardPeriod) !important;
     line-height: 1.5;
   }
@@ -996,7 +1202,8 @@
   .achievements-list {
     padding-left: 20px;
     margin: 0;
-    font-size: 16px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
   }
 
   .achievements-list li {
