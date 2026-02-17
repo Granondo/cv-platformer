@@ -96,92 +96,99 @@
     fallBubbleTimer: 0,
     techQueue: [],
     platforms: [
+        // ── JOB PLATFORMS (ascending) ─────────────────────────────
         { x: 0,    y: 450, w: 180, h: 20, color: '#6a7a5a' },
         { x: 250,  y: 400, w: 200, h: 20, key: 'toptal',    color: '#8a7a50' },
         { x: 500,  y: 350, w: 180, h: 20, key: 'upwork',    color: '#7a6a48' },
         { x: 750,  y: 280, w: 200, h: 20, key: 'workhuman', color: '#806050' },
         { x: 1000, y: 200, w: 220, h: 20, key: 'chulakov',  color: '#8a7040' },
-        { x: 1290, y: 280, w: 180, h: 20, color: '#5a6a7a' },
-        { x: 1530, y: 220, w: 150, h: 20, color: '#6a7a6a' },
-        { x: 1740, y: 160, w: 160, h: 20, color: '#7a6a7a' },
-        { x: 1960, y: 250, w: 140, h: 20, color: '#6a7a5a' },
-        { x: 2160, y: 180, w: 170, h: 20, color: '#5a6a8a' },
-        { x: 2390, y: 280, w: 150, h: 20, color: '#6a8a7a' },
-        { x: 2600, y: 200, w: 160, h: 20, color: '#7a8a6a' },
-        { x: 2820, y: 130, w: 140, h: 20, color: '#5a7a8a' },
-        { x: 3020, y: 200, w: 150, h: 20, color: '#6a7a8a' },
-        { x: 3230, y: 280, w: 160, h: 20, color: '#7a6a5a' },
-        { x: 3450, y: 180, w: 150, h: 20, color: '#5a6a7a' },
-        { x: 3660, y: 100, w: 160, h: 20, color: '#7a8a5a' },
-        { x: 3880, y: 160, w: 140, h: 20, color: '#6a7a6a' },
-        { x: 4080, y: 240, w: 150, h: 20, color: '#7a7a5a' },
-        { x: 4290, y: 160, w: 160, h: 20, color: '#6a5a7a' },
-        { x: 4510, y: 90,  w: 150, h: 20, color: '#8a7a6a' },
-        { x: 4720, y: 160, w: 160, h: 20, color: '#6a7a8a' },
-        { x: 4940, y: 240, w: 150, h: 20, color: '#7a8a7a' },
-        { x: 5150, y: 160, w: 160, h: 20, color: '#8a8a6a' },
-        { x: 5370, y: 90,  w: 150, h: 20, color: '#6a8a8a' },
-        { x: 5580, y: 160, w: 170, h: 20, color: '#7a6a8a' },
+        // ── VALLEY DROP ───────────────────────────────────────────
+        { x: 1290, y: 680, w: 180, h: 20, color: '#5a6a7a' },
+        // ── ASCENDING TO PEAK ─────────────────────────────────────
+        { x: 1530, y: 560, w: 150, h: 20, color: '#6a7a6a' },
+        { x: 1760, y: 500, w: 160, h: 20, color: '#7a6a7a' },
+        { x: 1980, y: 440, w: 140, h: 20, color: '#6a7a5a' },
+        { x: 2190, y: 380, w: 170, h: 20, color: '#5a6a8a' },
+        { x: 2400, y: 325, w: 150, h: 20, color: '#6a8a7a' },
+        { x: 2610, y: 270, w: 160, h: 20, color: '#7a8a6a' },
+        { x: 2820, y: 215, w: 140, h: 20, color: '#5a7a8a' },
+        { x: 3030, y: 165, w: 150, h: 20, color: '#6a7a8a' },
+        // ── DESCENDING — zigzag ups & downs ──────────────────────
+        { x: 3250, y: 200, w: 150, h: 20, color: '#7a6a5a' }, // small step down from peak
+        { x: 3440, y: 300, w: 140, h: 20, color: '#5a6a7a' }, // BIG drop
+        { x: 3630, y: 200, w: 150, h: 20, color: '#7a8a5a' }, // jump UP — zigzag!
+        { x: 3840, y: 310, w: 140, h: 20, color: '#6a7a6a' }, // BIG drop
+        { x: 4030, y: 215, w: 160, h: 20, color: '#7a7a5a' }, // jump UP — zigzag!
+        { x: 4240, y: 340, w: 140, h: 20, color: '#6a5a7a' }, // BIG drop
+        { x: 4430, y: 255, w: 160, h: 20, color: '#8a7a6a' }, // jump UP — zigzag!
+        { x: 4640, y: 370, w: 140, h: 20, color: '#6a7a8a' }, // BIG drop
+        { x: 4840, y: 285, w: 150, h: 20, color: '#7a8a7a' }, // jump UP — zigzag!
+        { x: 5050, y: 390, w: 150, h: 20, color: '#8a8a6a' }, // drop, easing out
+        { x: 5260, y: 425, w: 150, h: 20, color: '#6a8a8a' }, // approach
+        { x: 5470, y: 445, w: 180, h: 20, color: '#7a6a8a' }, // ← END
       ],
     stars: [
+        // ── JOB SECTION (unchanged) ───────────────────────────────
         // Between start and Toptal
-        { x: 180, y: 370 }, { x: 220, y: 340 },
-        // On/around Toptal
-        { x: 280, y: 370 }, { x: 380, y: 360 }, { x: 430, y: 330 },
+        { x: 180,  y: 370 }, { x: 220,  y: 340 },
+        // On/around Toptal (y=400)
+        { x: 280,  y: 370 }, { x: 380,  y: 360 }, { x: 430,  y: 330 },
         // Between Toptal and Upwork
-        { x: 470, y: 310 },
-        // On/around Upwork
-        { x: 530, y: 320 }, { x: 610, y: 300 }, { x: 660, y: 280 },
-        // On/around WorkHuman
-        { x: 790, y: 250 }, { x: 870, y: 230 },
+        { x: 470,  y: 310 },
+        // On/around Upwork (y=350)
+        { x: 530,  y: 320 }, { x: 610,  y: 300 }, { x: 660,  y: 280 },
+        // On/around WorkHuman (y=280)
+        { x: 790,  y: 250 }, { x: 870,  y: 230 },
         // Between WorkHuman and Chulakov
-        { x: 940, y: 200 }, { x: 970, y: 170 },
-        // On/around Chulakov
+        { x: 940,  y: 200 }, { x: 970,  y: 170 },
+        // On/around Chulakov (y=200)
         { x: 1030, y: 170 }, { x: 1120, y: 155 }, { x: 1190, y: 180 },
-        // Between Chulakov and final platform
-        { x: 1240, y: 240 }, { x: 1260, y: 210 },
-        // On final platform
-        { x: 1310, y: 250 }, { x: 1360, y: 240 }, { x: 1420, y: 250 },
-        // Platform 7 (orange)
-        { x: 1550, y: 190 }, { x: 1640, y: 200 },
-        // Platform 8 (red)
-        { x: 1760, y: 130 }, { x: 1860, y: 140 },
-        // Platform 9 (pink)
-        { x: 1980, y: 220 }, { x: 2060, y: 230 },
-        // Platform 10 (fuchsia)
-        { x: 2180, y: 150 }, { x: 2280, y: 160 },
-        // Platform 11 (emerald)
-        { x: 2410, y: 250 }, { x: 2510, y: 260 },
-        // Platform 12 (teal)
-        { x: 2620, y: 170 }, { x: 2720, y: 175 },
-        // Platform 13 (cyan)
-        { x: 2840, y: 100 }, { x: 2930, y: 110 },
-        // Platform 14 (sky)
-        { x: 3040, y: 170 }, { x: 3130, y: 180 },
-        // Platform 15 (blue)
-        { x: 3250, y: 250 }, { x: 3350, y: 255 },
-        // Platform 16 (indigo)
-        { x: 3470, y: 150 }, { x: 3560, y: 160 },
-        // Platform 17 (lime)
-        { x: 3680, y: 70  }, { x: 3780, y: 80  },
-        // Platform 18 (green)
-        { x: 3900, y: 130 }, { x: 3990, y: 140 },
-        // Platform 19 (yellow)
-        { x: 4100, y: 210 }, { x: 4190, y: 220 },
-        // Platform 20 (orange)
-        { x: 4310, y: 130 }, { x: 4400, y: 140 },
-        // Platform 21 (rose)
-        { x: 4530, y: 60  }, { x: 4620, y: 70  },
-        // Platform 22 (violet)
-        { x: 4740, y: 130 }, { x: 4830, y: 140 },
-        // Platform 23 (teal)
-        { x: 4960, y: 210 }, { x: 5050, y: 220 },
-        // Platform 24 (amber)
-        { x: 5170, y: 130 }, { x: 5260, y: 140 },
-        // Platform 25 (sky blue)
-        { x: 5390, y: 60  }, { x: 5480, y: 70  },
-        // Platform 26 (final)
-        { x: 5600, y: 130 }, { x: 5690, y: 140 }, { x: 5730, y: 135 },
+        // ── VALLEY DROP ───────────────────────────────────────────
+        { x: 1220, y: 380 }, { x: 1265, y: 545 },
+        // On platform 6 (y=680)
+        { x: 1320, y: 648 }, { x: 1395, y: 645 }, { x: 1462, y: 648 },
+        // ── ASCENDING ─────────────────────────────────────────────
+        // Platform 7 (y=560)
+        { x: 1558, y: 528 }, { x: 1638, y: 523 },
+        // Platform 8 (y=500)
+        { x: 1785, y: 468 }, { x: 1862, y: 463 },
+        // Platform 9 (y=440)
+        { x: 2005, y: 408 }, { x: 2082, y: 403 },
+        // Platform 10 (y=380)
+        { x: 2215, y: 348 }, { x: 2298, y: 343 },
+        // Platform 11 (y=325)
+        { x: 2425, y: 293 }, { x: 2508, y: 288 },
+        // Platform 12 (y=270)
+        { x: 2635, y: 238 }, { x: 2718, y: 233 },
+        // Platform 13 (y=215)
+        { x: 2845, y: 183 }, { x: 2922, y: 178 },
+        // Platform 14 (y=165)
+        { x: 3055, y: 133 }, { x: 3132, y: 128 },
+        // ── ZIGZAG DESCENT ────────────────────────────────────────
+        // Platform 15 — step down (y=200)
+        { x: 3275, y: 168 }, { x: 3355, y: 163 },
+        // Platform 16 — big drop (y=300)
+        { x: 3465, y: 268 }, { x: 3540, y: 263 },
+        // Platform 17 — jump UP (y=200), 3 coins reward
+        { x: 3655, y: 168 }, { x: 3712, y: 165 }, { x: 3740, y: 168 },
+        // Platform 18 — big drop (y=310)
+        { x: 3865, y: 278 }, { x: 3938, y: 273 },
+        // Platform 19 — jump UP (y=215)
+        { x: 4055, y: 183 }, { x: 4142, y: 178 },
+        // Platform 20 — big drop (y=340)
+        { x: 4265, y: 308 }, { x: 4348, y: 303 },
+        // Platform 21 — jump UP (y=255), 3 coins reward
+        { x: 4455, y: 223 }, { x: 4512, y: 220 }, { x: 4548, y: 223 },
+        // Platform 22 — big drop (y=370)
+        { x: 4665, y: 338 }, { x: 4748, y: 333 },
+        // Platform 23 — jump UP (y=285)
+        { x: 4865, y: 253 }, { x: 4948, y: 248 },
+        // Platform 24 — easing out (y=390)
+        { x: 5075, y: 358 }, { x: 5158, y: 353 },
+        // Platform 25 — approach (y=425)
+        { x: 5285, y: 393 }, { x: 5368, y: 388 },
+        // Platform 26 — END (y=445), 3 coins
+        { x: 5498, y: 413 }, { x: 5568, y: 410 }, { x: 5628, y: 413 },
     ].map(s => ({ ...s, collected: false, animTimer: 0 })),
     starsCollected: 0,
     particles: [],
