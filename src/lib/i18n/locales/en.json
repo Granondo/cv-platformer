@@ -1,7 +1,8 @@
 {
   "instructions": {
     "controls": "Use the arrow keys or A/D to move and Space to jump.",
-    "goal": "Jump on the platforms to learn more about my experience."
+    "goal": "Jump on the platforms to learn more about my experience.",
+    "desktop": "Best experienced on desktop."
   },
   "sections": {
     "techStack": "Tech Stack",

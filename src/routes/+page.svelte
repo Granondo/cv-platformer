@@ -1140,6 +1140,7 @@
     <div class="instructions">
       <p>{$_('instructions.controls')}</p>
       <p>{$_('instructions.goal')}</p>
+      <p class="desktop-hint">{$_('instructions.desktop')}</p>
     </div>
 
     {#if currentPlatform && platformData}
@@ -1235,6 +1236,13 @@
     margin: 0.7em 0;
   }
 
+  .desktop-hint {
+    margin-top: 12px !important;
+    padding-top: 10px;
+    border-top: 2px solid var(--cardBorder);
+    opacity: 0.55;
+  }
+
   .content {
     padding: 24px;
   }
@@ -1243,23 +1251,23 @@
     color: var(--cardH3);
     margin: 0 0 10px 0;
     font-family: 'Press Start 2P', monospace;
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 11px;
+    line-height: 1.7;
     text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
   }
 
   .description-panel .period {
     color: var(--cardPeriod);
     margin-bottom: 20px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
     line-height: 1.6;
   }
 
   .description-panel p {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    font-size: 13px;
-    line-height: 1.6;
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 1.7;
     margin: 0.8em 0;
   }
 
@@ -1369,21 +1377,21 @@
   }
 
   .tech-stack {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    font-size: 13px !important;
-    color: var(--cardPeriod) !important;
-    line-height: 1.5;
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    color: var(--cardPeriod);
+    line-height: 1.7;
   }
 
   .achievements-list {
     padding-left: 20px;
     margin: 0;
-    font-size: 14px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 12px;
+    font-family: system-ui, sans-serif;
   }
 
   .achievements-list li {
-    margin-bottom: 10px;
-    line-height: 1.5;
+    margin-bottom: 8px;
+    line-height: 1.7;
   }
 </style>
