@@ -294,6 +294,7 @@
         if (p.onPlatform !== platform) {
           if (platform.key) {
             displayPlatformInfo(platform);
+            platform.visited = true;
           }
           p.onPlatform = platform;
         }
@@ -400,28 +401,29 @@
     // ── PLATFORMS (pixel art stone bricks) ────────────────────
     game.platforms.forEach(platform => {
       const isKey = !!platform.key;
+      const isVisited = isKey && !!platform.visited;
       const px = platform.x, py = platform.y, pw = platform.w, ph = platform.h;
 
       // Hard pixel shadow (no blur)
-      ctx.fillStyle = isKey ? '#3a2800' : '#222222';
+      ctx.fillStyle = isVisited ? '#3a2800' : '#222222';
       ctx.fillRect(px + 4, py + 4, pw, ph);
 
       // Stone body
-      ctx.fillStyle = isKey ? '#8a7840' : '#606070';
+      ctx.fillStyle = isVisited ? '#c8a820' : '#606070';
       ctx.fillRect(px, py, pw, ph);
 
       // Stone highlight (lighter left & top)
-      ctx.fillStyle = isKey ? '#a09050' : '#787888';
+      ctx.fillStyle = isVisited ? '#e0c040' : '#787888';
       ctx.fillRect(px, py, pw, 2);
       ctx.fillRect(px, py, 2, ph);
 
       // Stone shadow (darker right & bottom)
-      ctx.fillStyle = isKey ? '#5a4820' : '#404050';
+      ctx.fillStyle = isVisited ? '#806010' : '#404050';
       ctx.fillRect(px + pw - 2, py, 2, ph);
       ctx.fillRect(px, py + ph - 2, pw, 2);
 
       // Brick mortar lines
-      const mortarColor = isKey ? '#6a5828' : '#484858';
+      const mortarColor = isVisited ? '#9a7820' : '#484858';
       ctx.fillStyle = mortarColor;
       // Horizontal mortar (one line dividing the platform)
       ctx.fillRect(px + 2, py + Math.floor(ph / 2), pw - 4, 1);
@@ -452,8 +454,8 @@
         ctx.fillRect(gx + 7, py - 7, 2, 1);
       }
 
-      // Gold trim for key (job) platforms
-      if (isKey) {
+      // Gold trim for visited key platforms
+      if (isVisited) {
         ctx.fillStyle = '#d4af37';
         ctx.fillRect(px, py - 4, pw, 2);
         ctx.fillRect(px, py - 4, 2, ph + 4);
@@ -465,12 +467,12 @@
         ctx.fillRect(px + pw - 4, py - 4, 4, 4);
       }
 
-      // Company label
-      if (platform.key) {
+      // Company label (grey until visited, gold after)
+      if (isKey) {
         const lang = translations[$locale] || translations.en;
         const company = lang.platforms[platform.key]?.company;
         if (company) {
-          ctx.fillStyle = '#d4af37';
+          ctx.fillStyle = isVisited ? '#d4af37' : '#707080';
           ctx.font = '9px "Press Start 2P", monospace';
           ctx.textAlign = 'center';
           ctx.fillText(company, px + pw / 2, py + ph + 18);
