@@ -85,6 +85,19 @@
     { name: 'Context API', color: '#00BCD4', colorLight: '#70e8f5', colorDark: '#007a8a' },
   ];
 
+  function createMobs() {
+    // Each mob patrols its platform. minX/maxX are patrol bounds (left edge of mob).
+    // Platforms used: #7 (x=1530,y=560,w=150), #12 (x=2610,y=270,w=160),
+    //                 #19 (x=4030,y=215,w=160), #23 (x=4840,y=285,w=150)
+    const h = 28;
+    return [
+      { x: 1570, y: 560 - h, w: 24, h, speed: 1.5, vx:  1.5, minX: 1530, maxX: 1530 + 150 - 24, dead: false, deadTimer: 0 },
+      { x: 2660, y: 270 - h, w: 24, h, speed: 1.5, vx: -1.5, minX: 2610, maxX: 2610 + 160 - 24, dead: false, deadTimer: 0 },
+      { x: 4060, y: 215 - h, w: 24, h, speed: 1.5, vx:  1.5, minX: 4030, maxX: 4030 + 160 - 24, dead: false, deadTimer: 0 },
+      { x: 4870, y: 285 - h, w: 24, h, speed: 1.5, vx: -1.5, minX: 4840, maxX: 4840 + 150 - 24, dead: false, deadTimer: 0 },
+    ];
+  }
+
   const game = {
     player: {
       x: 70, y: 390, w: 40, h: 60,
@@ -92,6 +105,8 @@
       squash: 1, onPlatform: null, facing: 1
     },
     falling: false,
+    killedByMob: false,
+    mobDeathProgress: 0,
     fallBubbles: [],
     fallBubbleTimer: 0,
     techQueue: [],
@@ -191,6 +206,7 @@
         { x: 5498, y: 413 }, { x: 5568, y: 410 }, { x: 5628, y: 413 },
     ].map(s => ({ ...s, collected: false, animTimer: 0 })),
     starsCollected: 0,
+    mobs: createMobs(),
     particles: [],
     parallaxLayers: [],
     camera: { x: 0, y: 0 },
@@ -234,6 +250,10 @@
         game.stars.forEach(s => { s.collected = false; s.animTimer = 0; });
         game.starsCollected = 0;
         starsCollected = 0;
+        game.mobs = createMobs();
+        game.killedByMob = false;
+        game.mobDeathProgress = 0;
+        game.platforms.forEach(pl => { if (pl.key) pl.visited = false; });
         hidePlatformInfo();
       } else if (!game.player.jumping) {
         game.player.vy = game.jumpForce;
@@ -265,6 +285,16 @@
 
   function update() {
     const p = game.player;
+
+    // When killed by mob: freeze player, advance collapse animation, skip all else
+    if (game.killedByMob) {
+      game.mobDeathProgress = Math.min(1, game.mobDeathProgress + 0.04);
+      game.particles = game.particles.filter(pt => {
+        pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.3; pt.life -= 0.02;
+        return pt.life > 0;
+      });
+      return;
+    }
 
     if (game.keys['ArrowLeft'] || game.keys['a']) { p.vx = -game.moveSpeed; p.facing = -1; }
     else if (game.keys['ArrowRight'] || game.keys['d']) { p.vx = game.moveSpeed; p.facing = 1; }
@@ -323,6 +353,38 @@
         starsCollected = game.starsCollected;
       }
     });
+    // Mob patrol & collision
+    game.mobs.forEach(mob => {
+      if (mob.dead) {
+        mob.deadTimer = Math.max(0, mob.deadTimer - 1);
+        return;
+      }
+
+      // Patrol movement
+      mob.x += mob.vx;
+      if (mob.x <= mob.minX) { mob.x = mob.minX; mob.vx =  mob.speed; }
+      if (mob.x >= mob.maxX) { mob.x = mob.maxX; mob.vx = -mob.speed; }
+
+      // Player collision (skip if player is already dead/falling)
+      if (game.falling) return;
+      const mx = mob.x, my = mob.y, mw = mob.w, mh = mob.h;
+      if (p.x + p.w > mx && p.x < mx + mw && p.y + p.h > my && p.y < my + mh) {
+        if (p.vy > 0 && p.y + p.h < my + mh * 0.55) {
+          // Stomp! Kill mob, bounce player
+          mob.dead = true;
+          mob.deadTimer = 22;
+          p.vy = -8;
+          createParticles(mx + mw / 2, my + mh / 2, '#8822cc');
+          createParticles(mx + mw / 2, my + mh / 2, '#aa44ee');
+        } else {
+          // Mob kills player
+          game.falling = true;
+          game.killedByMob = true;
+          hidePlatformInfo();
+        }
+      }
+    });
+
     game.particles = game.particles.filter(pt => {
       pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.3; pt.life -= 0.02;
       return pt.life > 0;
@@ -488,6 +550,87 @@
     });
     ctx.globalAlpha = 1;
 
+    // ── MOBS ──────────────────────────────────────────────────
+    const mobTime = Date.now() * 0.005;
+    game.mobs.forEach(mob => {
+      if (mob.dead && mob.deadTimer <= 0) return;
+
+      ctx.save();
+      ctx.translate(Math.round(mob.x + mob.w / 2), Math.round(mob.y + mob.h));
+
+      // Death squash: flatten vertically, widen horizontally
+      if (mob.dead) {
+        const t = mob.deadTimer / 22;
+        ctx.scale(1 + (1 - t) * 0.8, t);
+      }
+
+      // Flip direction
+      if (mob.vx > 0) ctx.scale(-1, 1);
+
+      // Pixel art goblin enemy
+      const wobble = Math.sin(mobTime + mob.x * 0.05) * 1;
+      const M1 = '#7a1acc'; // body purple
+      const M2 = '#a040ee'; // body highlight
+      const M3 = '#4a0080'; // body shadow
+      const MF = '#40bb40'; // face green
+      const MF2= '#60dd60'; // face highlight
+
+      // Shadow on ground
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.fillRect(-14, -1, 28, 3);
+
+      // Legs (two stubby legs at bottom)
+      ctx.fillStyle = M3;
+      ctx.fillRect(-10, -8 + wobble, 7, 8);
+      ctx.fillRect(3,   -8 + wobble, 7, 8);
+      ctx.fillStyle = M1;
+      ctx.fillRect(-10, -8 + wobble, 7, 6);
+      ctx.fillRect(3,   -8 + wobble, 7, 6);
+
+      // Main body blob
+      ctx.fillStyle = M3;
+      ctx.fillRect(-12, -28 + wobble, 24, 22);      // shadow layer
+      ctx.fillStyle = M1;
+      ctx.fillRect(-12, -28 + wobble, 22, 21);      // main
+      ctx.fillStyle = M2;
+      ctx.fillRect(-12, -28 + wobble, 22, 5);       // top highlight
+      ctx.fillRect(-12, -28 + wobble, 4, 21);       // left highlight
+
+      // Face (lighter green patch)
+      ctx.fillStyle = MF;
+      ctx.fillRect(-8, -26 + wobble, 16, 15);
+      ctx.fillStyle = MF2;
+      ctx.fillRect(-8, -26 + wobble, 16, 3);
+      ctx.fillRect(-8, -26 + wobble, 3, 15);
+
+      // Eyes (red, angry)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-7, -24 + wobble, 5, 4);
+      ctx.fillRect(2,  -24 + wobble, 5, 4);
+      ctx.fillStyle = '#ff2020';
+      ctx.fillRect(-6, -23 + wobble, 3, 3);
+      ctx.fillRect(3,  -23 + wobble, 3, 3);
+      // Angry eyebrow slant (pixel art)
+      ctx.fillStyle = M3;
+      ctx.fillRect(-7, -25 + wobble, 5, 1);
+      ctx.fillRect(2,  -26 + wobble, 5, 1);
+
+      // Mouth (jagged teeth)
+      ctx.fillStyle = '#220044';
+      ctx.fillRect(-5, -14 + wobble, 10, 4);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-4, -14 + wobble, 2, 3);
+      ctx.fillRect(-1, -14 + wobble, 2, 3);
+      ctx.fillRect(2,  -14 + wobble, 2, 3);
+
+      // Gold eyes glow (pupils)
+      ctx.fillStyle = '#ff6600';
+      ctx.fillRect(-5, -22 + wobble, 1, 1);
+      ctx.fillRect(5,  -23 + wobble, 1, 1);
+
+      ctx.restore();
+    });
+
     // ── COINS (collectibles) ───────────────────────────────────
     const now = Date.now() * 0.003;
     game.stars.forEach(star => {
@@ -537,10 +680,14 @@
     ctx.save();
     ctx.translate(Math.round(p.x + p.w / 2), Math.round(p.y + p.h));
 
-    if (game.falling) {
+    if (game.falling && !game.killedByMob) {
       ctx.translate(0, -30);
       ctx.rotate(p.rotation || 0);
       ctx.translate(0, 30);
+    } else if (game.killedByMob) {
+      // Collapse sideways: rotate around feet (origin is already at feet)
+      const collapseAngle = (Math.PI / 2) * game.mobDeathProgress * (p.facing || 1);
+      ctx.rotate(collapseAngle);
     }
 
     // Flip for facing direction
@@ -820,8 +967,8 @@
 
     ctx.restore(); // end player transform
 
-    // ── TECH BOXES (falling state) ────────────────────────────
-    if (game.falling) {
+    // ── TECH BOXES (falling state, not mob death) ─────────────
+    if (game.falling && !game.killedByMob) {
       const cx = p.x + p.w / 2;
       const cy = p.y + p.h / 2;
       game.fallBubbles.forEach(b => {
@@ -865,9 +1012,29 @@
     if (game.falling) {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = '10px "Press Start 2P", monospace';
       ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 6;
+      ctx.shadowBlur = 8;
+
+      if (game.killedByMob) {
+        // Dark semi-transparent overlay
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.fillRect(0, 0, width, height);
+
+        // Flicker effect: blink every ~20 frames using time
+        const blink = Math.floor(Date.now() / 350) % 2 === 0;
+
+        // Main death message
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = blink ? '#ff2020' : '#ff6060';
+        ctx.fillText('YOU DIED', width / 2, height / 2 - 24);
+
+        // Sub-message
+        ctx.font = '9px "Press Start 2P", monospace';
+        ctx.fillStyle = '#e8d8b0';
+        ctx.fillText('...killed by a goblin. sorry.', width / 2, height / 2 + 14);
+      }
+
+      ctx.font = '10px "Press Start 2P", monospace';
       ctx.fillStyle = '#f0c840';
       ctx.fillText('PRESS SPACE TO RESTART', width / 2, height - 40);
       ctx.shadowBlur = 0;
