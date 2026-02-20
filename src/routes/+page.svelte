@@ -1138,7 +1138,7 @@
 </svelte:head>
 
 {#if !$isLoading}
-<div class="container" style="--bg:{themes[currentTheme].bg}; --panelBg:{themes[currentTheme].panelBg}; --cardBorder:{themes[currentTheme].cardBorder}; --cardText:{themes[currentTheme].cardText}; --cardPeriod:{themes[currentTheme].cardPeriod}; --cardH3:{themes[currentTheme].cardH3};">
+<div class="container" style="--bg:{themes[currentTheme].bg}; --panelBg:{themes[currentTheme].panelBg}; --cardBorder:{themes[currentTheme].cardBorder}; --cardText:{themes[currentTheme].cardText}; --cardPeriod:{themes[currentTheme].cardPeriod}; --cardH3:{themes[currentTheme].cardH3}; --buttonBg:{currentTheme === 'light' ? 'rgba(216, 200, 154, 0.75)' : 'rgba(0,0,0,0.6)'};">
   <div class="game-wrapper">
     <canvas bind:this={canvas}></canvas>
     <div class="star-counter"><span class="star-icon">★</span> {starsCollected} / {game.stars.length}</div>
@@ -1314,7 +1314,7 @@
     top: 16px;
     right: 16px;
     z-index: 100;
-    background: rgba(0,0,0,0.6);
+    background: var(--buttonBg);
     border: 2px solid rgba(255,255,255,0.4);
     color: var(--cardText);
     padding: 8px;
@@ -1330,7 +1330,7 @@
   }
 
   .theme-switcher:hover {
-    background: rgba(0,0,0,0.8);
+    filter: brightness(0.9);
     box-shadow: 2px 2px 0 rgba(0,0,0,0.6);
     transform: translate(2px, 2px);
   }
@@ -1383,7 +1383,7 @@
   }
 
   .language-selector {
-    background: rgba(0,0,0,0.6);
+    background: var(--buttonBg);
     border: 2px solid rgba(255,255,255,0.4);
     color: var(--cardText);
     padding: 0 32px 0 12px;
@@ -1415,7 +1415,7 @@
   }
 
   .language-selector:hover {
-    background: rgba(0,0,0,0.8);
+    filter: brightness(0.9);
     box-shadow: 2px 2px 0 rgba(0,0,0,0.6);
     transform: translate(2px, 2px);
   }
