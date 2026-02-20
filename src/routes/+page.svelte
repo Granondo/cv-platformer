@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import { _, locale, isLoading } from 'svelte-i18n';
   import en from '$lib/i18n/locales/en.json';
   import ru from '$lib/i18n/locales/ru.json';
@@ -12,6 +13,12 @@
   let currentPlatform = null;
   let starsCollected = 0;
   let width, height;
+
+  let portalActive = false;
+  let portalAnimTimer = 0;
+  let levelComplete = false;
+  let levelCompleteBannerTimer = 0;
+  let bannerStars = [];
 
   let currentTheme = 'dark';
   let languageDropdownOpen = false;
@@ -263,6 +270,10 @@
         game.mobs = createMobs();
         game.killedByMob = false;
         game.mobDeathProgress = 0;
+        portalActive = false;
+        levelComplete = false;
+        levelCompleteBannerTimer = 0;
+        bannerStars = [];
         game.platforms.forEach(pl => { if (pl.key) pl.visited = false; });
         hidePlatformInfo();
       } else if (!game.player.jumping) {
@@ -295,6 +306,36 @@
 
   function update() {
     const p = game.player;
+
+    // Level complete: freeze gameplay, animate banner, navigate to level 2
+    if (levelComplete) {
+      levelCompleteBannerTimer++;
+      portalAnimTimer++;
+      // Raining gold stars
+      if (levelCompleteBannerTimer % 3 === 0) {
+        bannerStars.push({
+          x: Math.random() * width,
+          y: -10,
+          vy: 2 + Math.random() * 3,
+          vx: (Math.random() - 0.5) * 2,
+          rot: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.1,
+          size: 6 + Math.random() * 8,
+          color: Math.random() > 0.5 ? '#d4af37' : Math.random() > 0.5 ? '#f0c840' : '#ffee88'
+        });
+      }
+      bannerStars = bannerStars.filter(s => {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.rot += s.rotSpeed;
+        return s.y < height + 20;
+      });
+      // Navigate after ~2.5 seconds (150 frames at 60fps)
+      if (levelCompleteBannerTimer >= 150) {
+        goto('/level2');
+      }
+      return;
+    }
 
     // When killed by mob: freeze player, advance collapse animation, skip all else
     if (game.killedByMob) {
@@ -363,6 +404,27 @@
         starsCollected = game.starsCollected;
       }
     });
+
+    // Portal activation: all stars collected
+    if (game.starsCollected === game.stars.length && !portalActive) {
+      portalActive = true;
+      portalAnimTimer = 0;
+    }
+
+    // Portal collision: enter the portal on last platform
+    if (portalActive && !levelComplete) {
+      portalAnimTimer++;
+      const portalX = 5470 + 90;
+      const portalY = 445 - 40;
+      const dx = (p.x + p.w / 2) - portalX;
+      const dy = (p.y + p.h / 2) - portalY;
+      if (Math.abs(dx) < 40 && Math.abs(dy) < 50) {
+        levelComplete = true;
+        levelCompleteBannerTimer = 0;
+        bannerStars = [];
+      }
+    }
+
     // Mob patrol & collision
     game.mobs.forEach(mob => {
       if (mob.dead) {
@@ -551,6 +613,113 @@
         }
       }
     });
+
+    // ── PORTAL (fire portal erupting from last platform) ─────
+    if (portalActive) {
+      const portalX = 5470 + 90;
+      const portalY = 445;
+      const pt2 = portalAnimTimer * 0.05;
+      const openProgress = Math.min(1, portalAnimTimer / 40); // opening animation over ~40 frames
+
+      // Portal dimensions (grows during opening)
+      const portalW = 60 * openProgress;
+      const portalH = 90 * openProgress;
+
+      // Wide ambient glow on the ground
+      const groundGlow = ctx.createRadialGradient(portalX, portalY, 5, portalX, portalY, 100 + Math.sin(pt2) * 15);
+      groundGlow.addColorStop(0, `rgba(255, 140, 20, ${0.25 * openProgress})`);
+      groundGlow.addColorStop(0.4, `rgba(255, 60, 0, ${0.12 * openProgress})`);
+      groundGlow.addColorStop(1, 'rgba(255, 60, 0, 0)');
+      ctx.fillStyle = groundGlow;
+      ctx.fillRect(portalX - 110, portalY - 120, 220, 140);
+
+      // Upward fire glow (tall column of light above portal)
+      const fireGlow = ctx.createLinearGradient(portalX, portalY, portalX, portalY - portalH - 30);
+      fireGlow.addColorStop(0, `rgba(255, 100, 0, ${0.35 * openProgress})`);
+      fireGlow.addColorStop(0.5, `rgba(255, 180, 40, ${0.15 * openProgress})`);
+      fireGlow.addColorStop(1, 'rgba(255, 200, 60, 0)');
+      ctx.fillStyle = fireGlow;
+      ctx.fillRect(portalX - portalW / 2 - 15, portalY - portalH - 30, portalW + 30, portalH + 30);
+
+      // Base crack on platform (glowing fissure)
+      const crackW = portalW + 10;
+      ctx.fillStyle = `rgba(255, 220, 80, ${0.6 + Math.sin(pt2 * 4) * 0.2})`;
+      ctx.fillRect(portalX - crackW / 2, portalY - 3, crackW, 4);
+      ctx.fillStyle = `rgba(255, 100, 0, ${0.8 * openProgress})`;
+      ctx.fillRect(portalX - crackW / 2 + 4, portalY - 2, crackW - 8, 2);
+      // Small cracks extending from center
+      for (let i = 0; i < 5; i++) {
+        const cx = portalX - crackW / 2 + (crackW / 5) * i + 6;
+        const ch = 3 + Math.sin(pt2 * 3 + i * 2) * 2;
+        ctx.fillStyle = `rgba(255, 160, 40, ${0.5 * openProgress})`;
+        ctx.fillRect(cx, portalY - 1 - ch, 2, ch + 2);
+      }
+
+      // Main fire column — layered flames rising from the crack
+      if (openProgress > 0.2) {
+        const flameAlpha = Math.min(1, (openProgress - 0.2) / 0.3);
+
+        // Outer fire (dark red/orange)
+        for (let i = 0; i < 12; i++) {
+          const fx = portalX + Math.sin(pt2 * 4 + i * 1.7) * (portalW * 0.4);
+          const fy = portalY - (portalH * 0.15) * i - Math.sin(pt2 * 5 + i) * 6;
+          const fw = 8 + Math.sin(pt2 * 3 + i * 0.9) * 4;
+          const fh = 10 + Math.sin(pt2 * 2 + i * 1.3) * 4;
+          const fa = flameAlpha * (1 - i / 14) * 0.7;
+          ctx.fillStyle = `rgba(200, 50, 0, ${Math.max(0, fa)})`;
+          ctx.fillRect(Math.round(fx - fw / 2), Math.round(fy - fh), Math.round(fw), Math.round(fh));
+        }
+
+        // Mid fire (orange)
+        for (let i = 0; i < 10; i++) {
+          const fx = portalX + Math.sin(pt2 * 5 + i * 2.1) * (portalW * 0.28);
+          const fy = portalY - (portalH * 0.13) * i - Math.sin(pt2 * 6 + i * 1.5) * 5;
+          const fw = 6 + Math.sin(pt2 * 4 + i) * 3;
+          const fh = 8 + Math.sin(pt2 * 3 + i * 1.1) * 3;
+          const fa = flameAlpha * (1 - i / 12) * 0.8;
+          ctx.fillStyle = `rgba(255, 120, 0, ${Math.max(0, fa)})`;
+          ctx.fillRect(Math.round(fx - fw / 2), Math.round(fy - fh), Math.round(fw), Math.round(fh));
+        }
+
+        // Inner fire (bright yellow/white core)
+        for (let i = 0; i < 7; i++) {
+          const fx = portalX + Math.sin(pt2 * 6 + i * 2.5) * (portalW * 0.15);
+          const fy = portalY - (portalH * 0.11) * i - Math.sin(pt2 * 7 + i * 1.8) * 4;
+          const fw = 4 + Math.sin(pt2 * 5 + i * 1.2) * 2;
+          const fh = 6 + Math.sin(pt2 * 4 + i * 0.8) * 2;
+          const fa = flameAlpha * (1 - i / 9) * 0.9;
+          ctx.fillStyle = `rgba(255, 220, 80, ${Math.max(0, fa)})`;
+          ctx.fillRect(Math.round(fx - fw / 2), Math.round(fy - fh), Math.round(fw), Math.round(fh));
+        }
+
+        // White-hot core at base
+        ctx.fillStyle = `rgba(255, 255, 200, ${0.6 * flameAlpha + Math.sin(pt2 * 6) * 0.15})`;
+        ctx.fillRect(portalX - 8, portalY - 14, 16, 12);
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * flameAlpha + Math.sin(pt2 * 8) * 0.1})`;
+        ctx.fillRect(portalX - 4, portalY - 10, 8, 8);
+      }
+
+      // Sparks / embers flying upward
+      for (let i = 0; i < 14; i++) {
+        const sparkT = (pt2 * 2 + i * 1.3) % 4;
+        const sparkX = portalX + Math.sin(pt2 * 3 + i * 2.3) * (portalW * 0.5 + sparkT * 8);
+        const sparkY = portalY - sparkT * 25 - Math.sin(pt2 * 4 + i) * 10;
+        const sparkAlpha = openProgress * Math.max(0, 1 - sparkT / 3.5);
+        const sparkSize = 2 + Math.sin(pt2 * 5 + i) * 1;
+        const colors = ['#ff4400', '#ff8800', '#ffcc00', '#ffee88'];
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.globalAlpha = Math.max(0, sparkAlpha);
+        ctx.fillRect(Math.round(sparkX), Math.round(sparkY), Math.round(sparkSize), Math.round(sparkSize));
+      }
+      ctx.globalAlpha = 1;
+
+      // Pulsing ring of light at the base
+      const ringPulse = 0.3 + Math.sin(pt2 * 3) * 0.15;
+      ctx.fillStyle = `rgba(255, 180, 40, ${ringPulse * openProgress})`;
+      ctx.fillRect(portalX - portalW / 2 - 6, portalY - 5, portalW + 12, 3);
+      ctx.fillStyle = `rgba(255, 240, 120, ${ringPulse * 0.6 * openProgress})`;
+      ctx.fillRect(portalX - portalW / 2, portalY - 4, portalW, 2);
+    }
 
     // ── PARTICLES ──────────────────────────────────────────────
     game.particles.forEach(pt => {
@@ -1048,6 +1217,60 @@
       ctx.fillStyle = '#f0c840';
       ctx.fillText('PRESS SPACE TO RESTART', width / 2, height - 40);
       ctx.shadowBlur = 0;
+    }
+
+    // ── LEVEL COMPLETE BANNER ──────────────────────────────────
+    if (levelComplete) {
+      const bt = levelCompleteBannerTimer;
+      const fadeIn = Math.min(1, bt / 30);
+
+      // Dark overlay fade-in
+      ctx.fillStyle = `rgba(0, 0, 0, ${fadeIn * 0.65})`;
+      ctx.fillRect(0, 0, width, height);
+
+      // Gold flash (quick bright flash at start)
+      if (bt < 20) {
+        const flashAlpha = (1 - bt / 20) * 0.6;
+        ctx.fillStyle = `rgba(255, 220, 100, ${flashAlpha})`;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      // Raining gold stars
+      bannerStars.forEach(s => {
+        ctx.save();
+        ctx.translate(s.x, s.y);
+        ctx.rotate(s.rot);
+        ctx.fillStyle = s.color;
+        // Pixel star shape
+        const sz = s.size;
+        ctx.fillRect(-sz / 2, -1, sz, 2);
+        ctx.fillRect(-1, -sz / 2, 2, sz);
+        ctx.fillRect(-sz / 3, -sz / 3, sz * 2 / 3, sz * 2 / 3);
+        ctx.restore();
+      });
+
+      // "LEVEL COMPLETE" text
+      if (bt > 15) {
+        const textAlpha = Math.min(1, (bt - 15) / 20);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.globalAlpha = textAlpha;
+
+        // Glow
+        ctx.shadowColor = '#d4af37';
+        ctx.shadowBlur = 20;
+        ctx.font = '28px "Press Start 2P", monospace';
+        ctx.fillStyle = '#f0c840';
+        ctx.fillText('LEVEL COMPLETE', width / 2, height / 2 - 20);
+        ctx.shadowBlur = 0;
+
+        // Star count
+        ctx.font = '12px "Press Start 2P", monospace';
+        ctx.fillStyle = '#d4af37';
+        ctx.fillText(`★ ${game.starsCollected} / ${game.stars.length} ★`, width / 2, height / 2 + 25);
+
+        ctx.globalAlpha = 1;
+      }
     }
   }
 
