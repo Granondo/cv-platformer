@@ -14,6 +14,7 @@
   let width, height;
 
   let currentTheme = 'dark';
+  let languageDropdownOpen = false;
   const languageOptions = [
     { value: 'en', label: 'English' },
     { value: 'ru', label: 'Русский' },
@@ -63,6 +64,15 @@
 
   function handleLanguageChange(event) {
     locale.set(event.target.value);
+  }
+
+  function toggleLanguageDropdown() {
+    languageDropdownOpen = !languageDropdownOpen;
+  }
+
+  function selectLanguage(value) {
+    locale.set(value);
+    languageDropdownOpen = false;
   }
 
   const techs = [
@@ -1112,6 +1122,11 @@
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('resize', resize);
+    window.addEventListener('click', (e) => {
+      if (languageDropdownOpen && !e.target.closest('.language-selector-wrapper')) {
+        languageDropdownOpen = false;
+      }
+    });
 
     resize();
     gameLoop();
@@ -1119,7 +1134,7 @@
 </script>
 
 <svelte:head>
-  <title>Vladimir Rybas - Interactive Resume</title>
+  <title>Vladimir Rybas - Interactive CV</title>
 </svelte:head>
 
 {#if !$isLoading}
@@ -1127,11 +1142,34 @@
   <div class="game-wrapper">
     <canvas bind:this={canvas}></canvas>
     <div class="star-counter"><span class="star-icon">★</span> {starsCollected} / {game.stars.length}</div>
-    <select class="language-selector" value={$locale} on:change={handleLanguageChange}>
-      {#each languageOptions as option}
-        <option value={option.value}>{option.label}</option>
-      {/each}
-    </select>
+    <div class="language-selector-wrapper">
+      <!-- Hidden native select for accessibility -->
+      <select class="language-selector-native" value={$locale} on:change={handleLanguageChange} tabindex="-1">
+        {#each languageOptions as option}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      </select>
+
+      <!-- Custom styled dropdown -->
+      <button class="language-selector" on:click={toggleLanguageDropdown} type="button">
+        {languageOptions.find(opt => opt.value === $locale)?.label || 'English'}
+      </button>
+
+      {#if languageDropdownOpen}
+        <div class="language-dropdown">
+          {#each languageOptions as option}
+            <button
+              class="language-option"
+              class:selected={option.value === $locale}
+              on:click={() => selectLanguage(option.value)}
+              type="button"
+            >
+              {option.label}
+            </button>
+          {/each}
+        </div>
+      {/if}
+    </div>
     <button class="theme-switcher" on:click={toggleTheme}>
       {currentTheme === 'light' ? '🌙' : '☀️'}
     </button>
@@ -1331,15 +1369,24 @@
     top: -1px;
   }
 
-  .language-selector {
+  .language-selector-wrapper {
     position: absolute;
     top: 16px;
     right: 72px;
     z-index: 100;
+  }
+
+  .language-selector-native {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .language-selector {
     background: rgba(0,0,0,0.6);
     border: 2px solid rgba(255,255,255,0.4);
     color: var(--cardText);
-    padding: 0 12px;
+    padding: 0 32px 0 12px;
     border-radius: 0;
     cursor: pointer;
     font-family: 'Press Start 2P', monospace;
@@ -1347,8 +1394,24 @@
     height: 44px;
     box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
     outline: none;
-    appearance: none;
-    -webkit-appearance: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 100px;
+  }
+
+  .language-selector::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--cardText);
+    pointer-events: none;
   }
 
   .language-selector:hover {
@@ -1357,11 +1420,45 @@
     transform: translate(2px, 2px);
   }
 
-  .language-selector option {
-    background: #1a1a2a;
-    color: #e8d8b0;
-    padding: 8px;
+  .language-dropdown {
+    position: absolute;
+    top: 52px;
+    right: 0;
+    background: var(--panelBg);
+    border: 2px solid var(--cardBorder);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
+    min-width: 140px;
+    z-index: 101;
+  }
+
+  .language-option {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--cardBorder);
+    color: var(--cardText);
+    padding: 12px 14px;
     font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    text-align: left;
+    cursor: pointer;
+    transition: none;
+  }
+
+  .language-option:last-child {
+    border-bottom: none;
+  }
+
+  .language-option:hover {
+    background: var(--cardH3);
+    color: var(--panelBg);
+  }
+
+  .language-option.selected {
+    background: var(--cardBorder);
+    color: var(--cardH3);
+    font-weight: normal;
   }
 
   .section-title {
