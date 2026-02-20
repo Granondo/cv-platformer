@@ -16,6 +16,7 @@
 
   let portalActive = false;
   let portalAnimTimer = 0;
+  let portalHintAlpha = 0;
   let levelComplete = false;
   let levelCompleteBannerTimer = 0;
   let bannerStars = [];
@@ -271,6 +272,7 @@
         game.killedByMob = false;
         game.mobDeathProgress = 0;
         portalActive = false;
+        portalHintAlpha = 0;
         levelComplete = false;
         levelCompleteBannerTimer = 0;
         bannerStars = [];
@@ -423,6 +425,20 @@
         levelCompleteBannerTimer = 0;
         bannerStars = [];
       }
+    }
+
+    // Portal hint: fade in when portal active but last platform not visible, fade out when it is
+    if (portalActive && !levelComplete) {
+      const lastPlatX = 5470;
+      const lastPlatEnd = 5470 + 180;
+      const canSeePortal = lastPlatX < game.camera.x + width && lastPlatEnd > game.camera.x;
+      if (!canSeePortal) {
+        portalHintAlpha = Math.min(1, portalHintAlpha + 0.008);
+      } else {
+        portalHintAlpha = Math.max(0, portalHintAlpha - 0.02);
+      }
+    } else {
+      portalHintAlpha = Math.max(0, portalHintAlpha - 0.02);
     }
 
     // Mob patrol & collision
@@ -1271,6 +1287,62 @@
 
         ctx.globalAlpha = 1;
       }
+    }
+
+    // ── PORTAL HINT (mystical fire text at top) ─────────────────
+    if (portalHintAlpha > 0.01) {
+      const ht = Date.now() * 0.0012; // slow, drifting time
+      const hintY = 52;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const hintText = 'GO TO THE FINAL PLATFORM...';
+
+      // Slow breathing pulse on the whole hint
+      const breathe = 0.75 + Math.sin(ht * 1.8) * 0.25;
+      ctx.globalAlpha = portalHintAlpha * breathe;
+
+      // Deep outer glow (dark red, wide and soft)
+      ctx.font = '14px "Press Start 2P", monospace';
+      ctx.shadowColor = '#881100';
+      ctx.shadowBlur = 35;
+      ctx.fillStyle = '#661000';
+      ctx.fillText(hintText, width / 2, hintY);
+
+      // Mid glow (warm orange)
+      ctx.shadowColor = '#cc4400';
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = '#cc5500';
+      ctx.fillText(hintText, width / 2, hintY);
+
+      // Inner glow (amber)
+      ctx.shadowColor = '#ff8800';
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#e8a030';
+      ctx.fillText(hintText, width / 2, hintY);
+
+      // Bright core text
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffe8c0';
+      ctx.fillText(hintText, width / 2, hintY);
+
+      // Slow-drifting embers (few, gentle, floating upward)
+      for (let i = 0; i < 7; i++) {
+        const drift = Math.sin(ht * 0.7 + i * 2.3) * 30;
+        const sx = width / 2 - 120 + i * 42 + drift;
+        const rise = Math.sin(ht * 0.5 + i * 1.9);
+        const sy = hintY - 10 - Math.abs(rise) * 18;
+        const sa = 0.25 + Math.sin(ht * 0.9 + i * 1.6) * 0.2;
+        ctx.fillStyle = i % 3 === 0 ? '#ff6622' : i % 3 === 1 ? '#ffaa44' : '#ffdd88';
+        ctx.globalAlpha = portalHintAlpha * breathe * Math.max(0, sa);
+        const sz = 2 + Math.sin(ht * 0.6 + i) * 0.5;
+        ctx.fillRect(Math.round(sx), Math.round(sy), Math.round(sz), Math.round(sz));
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+      ctx.restore();
     }
   }
 
