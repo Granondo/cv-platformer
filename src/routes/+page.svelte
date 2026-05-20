@@ -1,12 +1,18 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import { _, locale, isLoading } from 'svelte-i18n';
   import en from '$lib/i18n/locales/en.json';
   import ru from '$lib/i18n/locales/ru.json';
   import ja from '$lib/i18n/locales/ja.json';
+  import { level1 } from '$lib/game/level1';
 
   const translations = { en, ru, ja };
+
+  // Target simulation rate: 60 logical steps per second.
+  // dt scales every per-step movement so behaviour matches the original
+  // implementation on any refresh rate (60 / 120 / 144 Hz, etc).
+  const TARGET_FPS = 60;
 
   let canvas;
   let descriptionPanel;
@@ -103,22 +109,9 @@
     { name: 'Context API', color: '#00BCD4', colorLight: '#70e8f5', colorDark: '#007a8a' },
   ];
 
-  function createMobs() {
-    // Each mob patrols its platform. minX/maxX are patrol bounds (left edge of mob).
-    // Platforms used: #7 (x=1530,y=560,w=150), #12 (x=2610,y=270,w=160),
-    //                 #19 (x=4030,y=215,w=160), #23 (x=4840,y=285,w=150)
-    const h = 28;
-    return [
-      { x: 1570, y: 560 - h, w: 24, h, speed: 1.5, vx:  1.5, minX: 1530, maxX: 1530 + 150 - 24, dead: false, deadTimer: 0 },
-      { x: 2660, y: 270 - h, w: 24, h, speed: 1.5, vx: -1.5, minX: 2610, maxX: 2610 + 160 - 24, dead: false, deadTimer: 0 },
-      { x: 4060, y: 215 - h, w: 24, h, speed: 1.5, vx:  1.5, minX: 4030, maxX: 4030 + 160 - 24, dead: false, deadTimer: 0 },
-      { x: 4870, y: 285 - h, w: 24, h, speed: 1.5, vx: -1.5, minX: 4840, maxX: 4840 + 150 - 24, dead: false, deadTimer: 0 },
-    ];
-  }
-
   const game = {
     player: {
-      x: 70, y: 390, w: 40, h: 60,
+      x: level1.start.x, y: level1.start.y, w: 40, h: 60,
       vx: 0, vy: 0, jumping: false,
       squash: 1, onPlatform: null, facing: 1
     },
@@ -128,107 +121,14 @@
     fallBubbles: [],
     fallBubbleTimer: 0,
     techQueue: [],
-    platforms: [
-        // ── JOB PLATFORMS (ascending) ─────────────────────────────
-        { x: 0,    y: 450, w: 180, h: 20, color: '#6a7a5a' },
-        { x: 250,  y: 400, w: 200, h: 20, key: 'toptal',    color: '#8a7a50' },
-        { x: 500,  y: 350, w: 180, h: 20, key: 'upwork',    color: '#7a6a48' },
-        { x: 750,  y: 280, w: 200, h: 20, key: 'workhuman', color: '#806050' },
-        { x: 1000, y: 200, w: 220, h: 20, key: 'chulakov',  color: '#8a7040' },
-        // ── VALLEY DROP ───────────────────────────────────────────
-        { x: 1290, y: 680, w: 180, h: 20, color: '#5a6a7a' },
-        // ── ASCENDING TO PEAK ─────────────────────────────────────
-        { x: 1530, y: 560, w: 150, h: 20, color: '#6a7a6a' },
-        { x: 1760, y: 500, w: 160, h: 20, color: '#7a6a7a' },
-        { x: 1980, y: 440, w: 140, h: 20, color: '#6a7a5a' },
-        { x: 2190, y: 380, w: 170, h: 20, color: '#5a6a8a' },
-        { x: 2400, y: 325, w: 150, h: 20, color: '#6a8a7a' },
-        { x: 2610, y: 270, w: 160, h: 20, color: '#7a8a6a' },
-        { x: 2820, y: 215, w: 140, h: 20, color: '#5a7a8a' },
-        { x: 3030, y: 165, w: 150, h: 20, color: '#6a7a8a' },
-        // ── DESCENDING — zigzag ups & downs ──────────────────────
-        { x: 3250, y: 200, w: 150, h: 20, color: '#7a6a5a' }, // small step down from peak
-        { x: 3440, y: 300, w: 140, h: 20, color: '#5a6a7a' }, // BIG drop
-        { x: 3630, y: 200, w: 150, h: 20, color: '#7a8a5a' }, // jump UP — zigzag!
-        { x: 3840, y: 310, w: 140, h: 20, color: '#6a7a6a' }, // BIG drop
-        { x: 4030, y: 215, w: 160, h: 20, color: '#7a7a5a' }, // jump UP — zigzag!
-        { x: 4240, y: 340, w: 140, h: 20, color: '#6a5a7a' }, // BIG drop
-        { x: 4430, y: 255, w: 160, h: 20, color: '#8a7a6a' }, // jump UP — zigzag!
-        { x: 4640, y: 370, w: 140, h: 20, color: '#6a7a8a' }, // BIG drop
-        { x: 4840, y: 285, w: 150, h: 20, color: '#7a8a7a' }, // jump UP — zigzag!
-        { x: 5050, y: 390, w: 150, h: 20, color: '#8a8a6a' }, // drop, easing out
-        { x: 5260, y: 425, w: 150, h: 20, color: '#6a8a8a' }, // approach
-        { x: 5470, y: 445, w: 180, h: 20, color: '#7a6a8a' }, // ← END
-      ],
-    stars: [
-        // ── JOB SECTION (unchanged) ───────────────────────────────
-        // Between start and Toptal
-        { x: 180,  y: 370 }, { x: 220,  y: 340 },
-        // On/around Toptal (y=400)
-        { x: 280,  y: 370 }, { x: 380,  y: 360 }, { x: 430,  y: 330 },
-        // Between Toptal and Upwork
-        { x: 470,  y: 310 },
-        // On/around Upwork (y=350)
-        { x: 530,  y: 320 }, { x: 610,  y: 300 }, { x: 660,  y: 280 },
-        // On/around WorkHuman (y=280)
-        { x: 790,  y: 250 }, { x: 870,  y: 230 },
-        // Between WorkHuman and Chulakov
-        { x: 940,  y: 200 }, { x: 970,  y: 170 },
-        // On/around Chulakov (y=200)
-        { x: 1030, y: 170 }, { x: 1120, y: 155 }, { x: 1190, y: 180 },
-        // ── VALLEY DROP ───────────────────────────────────────────
-        { x: 1220, y: 380 }, { x: 1265, y: 545 },
-        // On platform 6 (y=680)
-        { x: 1320, y: 648 }, { x: 1395, y: 645 }, { x: 1462, y: 648 },
-        // ── ASCENDING ─────────────────────────────────────────────
-        // Platform 7 (y=560)
-        { x: 1558, y: 528 }, { x: 1638, y: 523 },
-        // Platform 8 (y=500)
-        { x: 1785, y: 468 }, { x: 1862, y: 463 },
-        // Platform 9 (y=440)
-        { x: 2005, y: 408 }, { x: 2082, y: 403 },
-        // Platform 10 (y=380)
-        { x: 2215, y: 348 }, { x: 2298, y: 343 },
-        // Platform 11 (y=325)
-        { x: 2425, y: 293 }, { x: 2508, y: 288 },
-        // Platform 12 (y=270)
-        { x: 2635, y: 238 }, { x: 2718, y: 233 },
-        // Platform 13 (y=215)
-        { x: 2845, y: 183 }, { x: 2922, y: 178 },
-        // Platform 14 (y=165)
-        { x: 3055, y: 133 }, { x: 3132, y: 128 },
-        // ── ZIGZAG DESCENT ────────────────────────────────────────
-        // Platform 15 — step down (y=200)
-        { x: 3275, y: 168 }, { x: 3355, y: 163 },
-        // Platform 16 — big drop (y=300)
-        { x: 3465, y: 268 }, { x: 3540, y: 263 },
-        // Platform 17 — jump UP (y=200), 3 coins reward
-        { x: 3655, y: 168 }, { x: 3712, y: 165 }, { x: 3740, y: 168 },
-        // Platform 18 — big drop (y=310)
-        { x: 3865, y: 278 }, { x: 3938, y: 273 },
-        // Platform 19 — jump UP (y=215)
-        { x: 4055, y: 183 }, { x: 4142, y: 178 },
-        // Platform 20 — big drop (y=340)
-        { x: 4265, y: 308 }, { x: 4348, y: 303 },
-        // Platform 21 — jump UP (y=255), 3 coins reward
-        { x: 4455, y: 223 }, { x: 4512, y: 220 }, { x: 4548, y: 223 },
-        // Platform 22 — big drop (y=370)
-        { x: 4665, y: 338 }, { x: 4748, y: 333 },
-        // Platform 23 — jump UP (y=285)
-        { x: 4865, y: 253 }, { x: 4948, y: 248 },
-        // Platform 24 — easing out (y=390)
-        { x: 5075, y: 358 }, { x: 5158, y: 353 },
-        // Platform 25 — approach (y=425)
-        { x: 5285, y: 393 }, { x: 5368, y: 388 },
-        // Platform 26 — END (y=445), 3 coins
-        { x: 5498, y: 413 }, { x: 5568, y: 410 }, { x: 5628, y: 413 },
-    ].map(s => ({ ...s, collected: false, animTimer: 0 })),
+    platforms: level1.platforms.map(p => ({ ...p })),
+    stars: level1.stars.map(s => ({ ...s, collected: false, animTimer: 0 })),
     starsCollected: 0,
-    mobs: createMobs(),
+    mobs: level1.mobs(),
     particles: [],
     parallaxLayers: [],
     camera: { x: 0, y: 0 },
-    levelEnd: 6000,
+    levelEnd: level1.end,
     gravity: 0.5, jumpForce: -12, moveSpeed: 5, keys: {}
   };
 
@@ -260,7 +160,7 @@
         game.fallBubbles = [];
         game.techQueue = [];
         game.camera.y = 0;
-        game.player.x = 70; game.player.y = 390;
+        game.player.x = level1.start.x; game.player.y = level1.start.y;
         game.player.vx = 0; game.player.vy = 0;
         game.player.rotation = 0;
         game.player.facing = 1;
@@ -268,7 +168,7 @@
         game.stars.forEach(s => { s.collected = false; s.animTimer = 0; });
         game.starsCollected = 0;
         starsCollected = 0;
-        game.mobs = createMobs();
+        game.mobs = level1.mobs();
         game.killedByMob = false;
         game.mobDeathProgress = 0;
         portalActive = false;
@@ -416,8 +316,8 @@
     // Portal collision: enter the portal on last platform
     if (portalActive && !levelComplete) {
       portalAnimTimer++;
-      const portalX = 5470 + 90;
-      const portalY = 445 - 40;
+      const portalX = level1.portal.x;
+      const portalY = level1.portal.y - 40;
       const dx = (p.x + p.w / 2) - portalX;
       const dy = (p.y + p.h / 2) - portalY;
       if (Math.abs(dx) < 40 && Math.abs(dy) < 50) {
@@ -429,8 +329,9 @@
 
     // Portal hint: fade in when portal active but last platform not visible, fade out when it is
     if (portalActive && !levelComplete) {
-      const lastPlatX = 5470;
-      const lastPlatEnd = 5470 + 180;
+      const lastPlatform = level1.platforms[level1.platforms.length - 1];
+      const lastPlatX = lastPlatform.x;
+      const lastPlatEnd = lastPlatform.x + lastPlatform.w;
       const canSeePortal = lastPlatX < game.camera.x + width && lastPlatEnd > game.camera.x;
       if (!canSeePortal) {
         portalHintAlpha = Math.min(1, portalHintAlpha + 0.008);
@@ -632,8 +533,8 @@
 
     // ── PORTAL (fire portal erupting from last platform) ─────
     if (portalActive) {
-      const portalX = 5470 + 90;
-      const portalY = 445;
+      const portalX = level1.portal.x;
+      const portalY = level1.portal.y;
       const pt2 = portalAnimTimer * 0.05;
       const openProgress = Math.min(1, portalAnimTimer / 40); // opening animation over ~40 frames
 
@@ -1347,6 +1248,8 @@
   }
 
   let gameInitialized = false;
+  let rafId = 0;
+  let cleanupListeners = () => {};
 
   function createParallax() {
     game.parallaxLayers = [];
@@ -1408,24 +1311,51 @@
       createParallax();
     }
 
-    function gameLoop() {
-      update();
+    function clickAway(e) {
+      if (languageDropdownOpen && !e.target.closest('.language-selector-wrapper')) {
+        languageDropdownOpen = false;
+      }
+    }
+
+    // Fixed-timestep loop: simulate at TARGET_FPS regardless of monitor refresh
+    // rate. Draw runs every animation frame. Accumulator is capped at 5 steps
+    // to avoid spiral-of-death after a long tab-pause.
+    const STEP_MS = 1000 / TARGET_FPS;
+    let accumulator = 0;
+    let lastTime = performance.now();
+
+    function gameLoop(now) {
+      const frameDelta = now - lastTime;
+      lastTime = now;
+      accumulator = Math.min(accumulator + frameDelta, STEP_MS * 5);
+      while (accumulator >= STEP_MS) {
+        update();
+        accumulator -= STEP_MS;
+      }
       draw(ctx);
-      requestAnimationFrame(gameLoop);
+      rafId = requestAnimationFrame(gameLoop);
     }
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('resize', resize);
-    window.addEventListener('click', (e) => {
-      if (languageDropdownOpen && !e.target.closest('.language-selector-wrapper')) {
-        languageDropdownOpen = false;
-      }
-    });
+    window.addEventListener('click', clickAway);
+
+    cleanupListeners = () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('click', clickAway);
+    };
 
     resize();
-    gameLoop();
+    rafId = requestAnimationFrame(gameLoop);
   }
+
+  onDestroy(() => {
+    if (rafId) cancelAnimationFrame(rafId);
+    cleanupListeners();
+  });
 </script>
 
 <svelte:head>

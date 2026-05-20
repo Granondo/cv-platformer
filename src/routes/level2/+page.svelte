@@ -252,8 +252,18 @@
       generateStalactites();
     }
 
-    function gameLoop() {
-      update();
+    const STEP_MS = 1000 / 60;
+    let accumulator = 0;
+    let lastTime = performance.now();
+
+    function gameLoop(now) {
+      const frameDelta = now - lastTime;
+      lastTime = now;
+      accumulator = Math.min(accumulator + frameDelta, STEP_MS * 5);
+      while (accumulator >= STEP_MS) {
+        update();
+        accumulator -= STEP_MS;
+      }
       draw(ctx);
       animFrame = requestAnimationFrame(gameLoop);
     }
@@ -261,7 +271,7 @@
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('resize', resize);
     resize();
-    gameLoop();
+    animFrame = requestAnimationFrame(gameLoop);
 
     return () => {
       cancelAnimationFrame(animFrame);
