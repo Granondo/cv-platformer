@@ -12,6 +12,7 @@
   "platforms": {
     "toptal": {
       "company": "Toptal",
+      "role": "Frontend Engineer",
       "period": "Sept 2019 - Jun 2020",
       "intro": "Cross-functional team of 5 (2 FE, 2 BE, 1 QA)\nDeveloped B2C e-commerce platform development, focusing on authentication and core user-facing features.",
       "techStack": "React, Redux, Node.js, Express, PostgreSQL, MongoDB",
@@ -24,6 +25,7 @@
     },
     "upwork": {
       "company": "Upwork",
+      "role": "Frontend Engineer",
       "period": "Aug 2020 - May 2021",
       "intro": "Cross-functional team of 4 (FE, BE, QA, Designer)\nDeveloped a feature-rich task management platform with advanced collaboration capabilities.",
       "techStack": "React, Context API, TypeScript, React Router, Draft.js, react-beautiful-dnd, Material-UI",
@@ -37,6 +39,7 @@
     },
     "workhuman": {
       "company": "WorkHuman",
+      "role": "Frontend Engineer",
       "period": "May 2022 - May 2023",
       "intro": "Agile team averaging 7 members (2 FE, 2 BE, 2 QA, Designer)\nDeveloped an employee rewards management platform from near-scratch.",
       "techStack": "React, TypeScript, Context API, React Router, Custom UI library",
@@ -52,6 +55,7 @@
     },
     "chulakov": {
       "company": "Chulakov Studio",
+      "role": "Senior Frontend Engineer",
       "period": "May 2024 - Present",
       "intro": "Team of 6 (2 FE, 2 BE, QA, Analyst)\nDeveloping a security monitoring application for a major financial institution.",
       "techStack": "React 18, MobX, TypeScript, Highcharts, React Router, Micro-frontend architecture",
@@ -62,6 +66,46 @@
         "Optimized rendering performance for high-volume data visualization, handling thousands of data points efficiently.",
         "Systematically debugged and resolved critical issues across the application, including race conditions, UI logic errors, and memory leaks."
       ]
+    }
+  },
+  "cv": {
+    "header": {
+      "name": "Vladimir Rybas",
+      "title": "Senior Frontend Engineer",
+      "location": "Available remotely",
+      "email": "wlrybas@gmail.com",
+      "github": "https://github.com/Granondo",
+      "linkedin": "https://www.linkedin.com/in/vladimir-rybas-4a785aa1/"
+    },
+    "summary": "Frontend engineer with 5+ years building production React applications — from B2C e-commerce to enterprise dashboards for a major financial institution. Most at home in TypeScript with React, MobX or Redux, and complex data visualization, but comfortable across the stack with Node.js and relational databases.",
+    "sections": {
+      "summary": "About",
+      "experience": "Experience",
+      "skills": "Skills",
+      "languages": "Languages"
+    },
+    "skills": {
+      "frontend": {
+        "title": "Frontend",
+        "items": "React, TypeScript, MobX, Redux, Context API, React Router, Material UI, Draft.js, Highcharts, Micro-frontends"
+      },
+      "backend": {
+        "title": "Backend",
+        "items": "Node.js, Express, PostgreSQL, MongoDB, REST APIs"
+      },
+      "tools": {
+        "title": "Tools & Practices",
+        "items": "Git, Vite, Webpack, Agile / Scrum, code review, performance profiling"
+      }
+    },
+    "languages": [
+      { "name": "Russian", "level": "Native" },
+      { "name": "English", "level": "Fluent" }
+    ],
+    "cta": {
+      "playGame": "Play this CV",
+      "playGameHint": "Try the platformer version",
+      "backToCV": "Back to CV"
     }
   }
 }

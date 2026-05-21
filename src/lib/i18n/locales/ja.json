@@ -12,6 +12,7 @@
   "platforms": {
     "toptal": {
       "company": "Toptal",
+      "role": "フロントエンドエンジニア",
       "period": "2019年9月 - 2020年6月",
       "intro": "5名のクロスファンクショナルチーム(FE 2名、BE 2名、QA 1名)\n認証とコアユーザー向け機能に焦点を当てたB2C電子商取引プラットフォームの開発。",
       "techStack": "React、Redux、Node.js、Express、PostgreSQL、MongoDB",
@@ -24,6 +25,7 @@
     },
     "upwork": {
       "company": "Upwork",
+      "role": "フロントエンドエンジニア",
       "period": "2020年8月 - 2021年5月",
       "intro": "4名のクロスファンクショナルチーム(FE、BE、QA、デザイナー)\n高度なコラボレーション機能を備えた機能豊富なタスク管理プラットフォームの開発。",
       "techStack": "React、Context API、TypeScript、React Router、Draft.js、react-beautiful-dnd、Material-UI",
@@ -37,6 +39,7 @@
     },
     "workhuman": {
       "company": "WorkHuman",
+      "role": "フロントエンドエンジニア",
       "period": "2022年5月 - 2023年5月",
       "intro": "平均7名のアジャイルチーム(FE 2名、BE 2名、QA 2名、デザイナー)\nほぼゼロから従業員報酬管理プラットフォームを開発。",
       "techStack": "React、TypeScript、Context API、React Router、カスタムUIライブラリ",
@@ -52,6 +55,7 @@
     },
     "chulakov": {
       "company": "Chulakov Studio",
+      "role": "シニアフロントエンドエンジニア",
       "period": "2024年5月 - 現在",
       "intro": "6名のチーム(FE 2名、BE 2名、QA、アナリスト)\n大手金融機関向けのセキュリティモニタリングアプリケーションを開発中。",
       "techStack": "React 18、MobX、TypeScript、Highcharts、React Router、マイクロフロントエンドアーキテクチャ",
@@ -62,6 +66,46 @@
         "大量データの可視化のためのレンダリングパフォーマンスを最適化し、数千のデータポイントを効率的に処理しました。",
         "レースコンディション、UIロジックエラー、メモリリークなど、アプリケーション全体の重要な問題を体系的にデバッグ・解決しました。"
       ]
+    }
+  },
+  "cv": {
+    "header": {
+      "name": "Vladimir Rybas",
+      "title": "シニアフロントエンドエンジニア",
+      "location": "リモート可",
+      "email": "wlrybas@gmail.com",
+      "github": "https://github.com/Granondo",
+      "linkedin": "https://www.linkedin.com/in/vladimir-rybas-4a785aa1/"
+    },
+    "summary": "5年以上のReact開発経験を持つフロントエンドエンジニア。B2C ECサイトから大手金融機関向けのエンタープライズダッシュボードまで、本番環境のアプリケーション開発に従事してきました。TypeScript、React、MobX/Redux、複雑なデータ可視化を得意とし、Node.jsとリレーショナルデータベースを用いたフルスタック開発にも対応可能です。",
+    "sections": {
+      "summary": "概要",
+      "experience": "職歴",
+      "skills": "スキル",
+      "languages": "言語"
+    },
+    "skills": {
+      "frontend": {
+        "title": "フロントエンド",
+        "items": "React、TypeScript、MobX、Redux、Context API、React Router、Material UI、Draft.js、Highcharts、マイクロフロントエンド"
+      },
+      "backend": {
+        "title": "バックエンド",
+        "items": "Node.js、Express、PostgreSQL、MongoDB、REST API"
+      },
+      "tools": {
+        "title": "ツール・手法",
+        "items": "Git、Vite、Webpack、Agile / Scrum、コードレビュー、パフォーマンス最適化"
+      }
+    },
+    "languages": [
+      { "name": "ロシア語", "level": "ネイティブ" },
+      { "name": "英語", "level": "ビジネスレベル" }
+    ],
+    "cta": {
+      "playGame": "CVをプレイ",
+      "playGameHint": "プラットフォーマー版を試す",
+      "backToCV": "CVに戻る"
     }
   }
 }

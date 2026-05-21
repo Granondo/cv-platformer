@@ -12,6 +12,7 @@
   "platforms": {
     "toptal": {
       "company": "Toptal",
+      "role": "Frontend-инженер",
       "period": "Сентябрь 2019 - Июнь 2020",
       "intro": "Кросс-функциональная команда из 5 человек (2 FE, 2 BE, 1 QA)\nРазработка B2C платформы электронной коммерции с акцентом на аутентификацию и основные пользовательские функции.",
       "techStack": "React, Redux, Node.js, Express, PostgreSQL, MongoDB",
@@ -24,6 +25,7 @@
     },
     "upwork": {
       "company": "Upwork",
+      "role": "Frontend-инженер",
       "period": "Август 2020 - Май 2021",
       "intro": "Кросс-функциональная команда из 4 человек (FE, BE, QA, Дизайнер)\nРазработка многофункциональной платформы для управления задачами с расширенными возможностями совместной работы.",
       "techStack": "React, Context API, TypeScript, React Router, Draft.js, react-beautiful-dnd, Material-UI",
@@ -37,6 +39,7 @@
     },
     "workhuman": {
       "company": "WorkHuman",
+      "role": "Frontend-инженер",
       "period": "Май 2022 - Май 2023",
       "intro": "Agile команда в среднем из 7 человек (2 FE, 2 BE, 2 QA, Дизайнер)\nРазработка платформы управления наградами сотрудников практически с нуля.",
       "techStack": "React, TypeScript, Context API, React Router, Custom UI library",
@@ -52,6 +55,7 @@
     },
     "chulakov": {
       "company": "Chulakov Studio",
+      "role": "Senior Frontend-инженер",
       "period": "Май 2024 - Настоящее время",
       "intro": "Команда из 6 человек (2 FE, 2 BE, QA, Аналитик)\nРазработка приложения для мониторинга безопасности для крупной финансовой организации.",
       "techStack": "React 18, MobX, TypeScript, Highcharts, React Router, Микрофронтенд архитектура",
@@ -62,6 +66,46 @@
         "Оптимизировал производительность рендеринга для визуализации больших объемов данных, эффективно обрабатывая тысячи точек данных.",
         "Систематически отлаживал и решал критические проблемы в приложении, включая race conditions, ошибки UI логики и утечки памяти."
       ]
+    }
+  },
+  "cv": {
+    "header": {
+      "name": "Владимир Рыбас",
+      "title": "Senior Frontend-инженер",
+      "location": "Удалённо",
+      "email": "wlrybas@gmail.com",
+      "github": "https://github.com/Granondo",
+      "linkedin": "https://www.linkedin.com/in/vladimir-rybas-4a785aa1/"
+    },
+    "summary": "Frontend-инженер с 5+ годами опыта разработки production React-приложений — от B2C e-commerce до enterprise-дашбордов для крупной финансовой организации. Сильнее всего в TypeScript, React, MobX/Redux и сложной визуализации данных, но уверенно работаю и со стеком Node.js и реляционными базами.",
+    "sections": {
+      "summary": "О себе",
+      "experience": "Опыт",
+      "skills": "Навыки",
+      "languages": "Языки"
+    },
+    "skills": {
+      "frontend": {
+        "title": "Frontend",
+        "items": "React, TypeScript, MobX, Redux, Context API, React Router, Material UI, Draft.js, Highcharts, Микрофронтенды"
+      },
+      "backend": {
+        "title": "Backend",
+        "items": "Node.js, Express, PostgreSQL, MongoDB, REST API"
+      },
+      "tools": {
+        "title": "Инструменты и практики",
+        "items": "Git, Vite, Webpack, Agile / Scrum, code review, профилирование производительности"
+      }
+    },
+    "languages": [
+      { "name": "Русский", "level": "Родной" },
+      { "name": "Английский", "level": "Свободный" }
+    ],
+    "cta": {
+      "playGame": "Сыграть в CV",
+      "playGameHint": "Попробуйте платформер-версию",
+      "backToCV": "К резюме"
     }
   }
 }

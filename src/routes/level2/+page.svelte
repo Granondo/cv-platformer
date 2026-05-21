@@ -233,12 +233,12 @@
 
   function handleKeyDown(e) {
     if (e.key === 'Escape') {
-      goto('/');
+      goto('/play');
     }
   }
 
   function goBack() {
-    goto('/');
+    goto('/play');
   }
 
   onMount(() => {
